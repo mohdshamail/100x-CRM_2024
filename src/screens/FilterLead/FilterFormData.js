@@ -1,0 +1,97 @@
+export const filterblankData = [
+  { label: "Blank Descritpion", value: "1" },
+  { label: "Blank DIG", value: "2" },
+  { label: "Blank Lead Quality", value: "3" },
+  { label: "Blank Painarea", value: "4" },
+];
+
+export const campaignDropDownData = [
+  { label: "--Select Campaign--", value:null },
+  { label: "X-MAS", value: "X-MAS" },
+  { label: "YEAR END OFFER", value: "YEAR END OFFER" },
+  { label: "NEW YEAR 2022", value: "NEW YEAR 2022" },
+  { label: "26 REPUBLIC", value: "26 REPUBLIC" },
+  { label: "Month-End", value: "Month-End" },
+  { label: "Couple Combo Offer", value: "Couple Combo Offer" },
+  { label: "Holi Offer", value: "Holi Offer" },
+  { label: "NSDC Certification", value: "NSDC Certification" },
+  { label: "Upgradation Offer", value: "Upgradation Offer" },
+  { label: "Fee Revised", value: "Fee Revised" },
+  { label: "Independent Day Offer", value: "Independent Day Offer" },
+  { label: "Year-end Scholorship", value: "Year-end Scholorship" },
+  { label: "Christmas Day Offer", value: "Christmas Day Offer" },
+  { label: "LG-Webinar", value: "LG-Webinar" },
+  { label: "Portal Renew", value: "Portal Renew" },
+  { label: "9 in 1 campaign", value: "9 in 1 campaign" },
+  { label: "Weekend Offer", value: "Weekend Offer" },
+  { label: "Summer Deal", value: "Summer Deal" },
+  { label: "Triple Bananza offer", value: "Triple Bananza offer" },
+  { label: "PP Job Guarantee", value: "PP Job Guarantee" },
+  { label: "IP Job Guarantee", value: "IP Job Guarantee" },
+  { label: "Monsoon Deal", value: "Monsoon Deal" },
+  { label: "Rakhi offer", value: "Rakhi offer" },
+  { label: "HHIND", value: "HHIND" },
+  { label: "HH3INI", value: "HH3INI" },
+  { label: "2 Free Courses", value: "2 Free Courses" },
+  { label: "LOWEST PRICE", value: "LOWEST PRICE" },
+  { label: "Refer and Earn Offer", value: "Refer and Earn Offer" },
+  { label: "HHVIP", value: "HHVIP" },
+  { label: "Diwali Dhamaka", value: "Diwali Dhamaka" },
+  { label: "Pre-Diwali Offer", value: "Pre-Diwali Offer" },
+  { label: "Month-end Scholarship", value: "Month-end Scholarship" },
+  { label: "Children's Day Deal", value: "Children's Day Deal" },
+  { label: "WINTER DEALS", value: "WINTER DEALS" },
+  { label: "CPC Examination", value: "CPC Examination" },
+  { label: "SAP Partner Certification", value: "SAP Partner Certification" },
+  { label: "2023 Offers", value: "2023 Offers" },
+  { label: "Republic Day Offer", value: "Republic Day Offer" },
+  { label: "100% Scholorship Offer", value: "100% Scholorship Offer" },
+  { label: "Fee Hike Campaign", value: "Fee Hike Campaign" },
+  { label: "Job Guarantee Offer", value: "Job Guarantee Offer" },
+  { label: "SUMMER DEAL CAMPAIGN", value: "SUMMER DEAL CAMPAIGN" },
+];
+export const certificateStatusDropDownData = [
+  { label: "--Select--", value: null },
+  { label: "Sent", value: "1" },
+  { label: "Not Sent", value: "0" },
+];
+
+export const sortDropDownData = [
+  { label: "Sort BY", value: "1" },
+  { label: "ID Newer First" ,  value: "2" },
+  { label: "ID Older First" ,  value: "3" },
+  { label: "Paid First"     ,  value: "4" },
+  { label: "Unpaid First"   ,  value: "5" },
+  { label: "Certificate ↑"  ,  value: "6" },
+  { label: "Certificate ↓"  ,  value: "7" },
+  { label: "Recent edit"    ,  value: "8" },
+  { label: "Divide Lead"    ,  value: "9" },
+];
+
+export const countryDropDownData = [
+  { label: "All Leads", value: "" },
+  { label: "IND Leads", value: "IND" },
+  { label: "US Leads" , value: "US" },
+  { label: "CP Leads" , value: "CP" },
+];
+export const callCountDropDownData = [
+  { label: "--Select--", value: null },
+  { label: "Zero", value: "Zero" },
+  { label: "1", value: "1" },
+  { label: "2", value: "2" },
+  { label: "3", value: "3" },
+  { label: "4", value: "4" },
+  { label: "5", value: "5" },
+  { label: "6", value: "6" },
+  { label: "7", value: "7" },
+  { label: "8", value: "8" },
+  { label: "9", value: "9" },
+  { label: "10", value: "10" },
+]
+
+export const pipelineBulkDropDownData = [
+  { label: "Pipeline", value: "Pipeline" },
+  { label: "Bulk", value: "Bulk" },
+  { label: "Demo", value: "Demo" },
+  { label: "Scholarship form send", value: "Scholarship form send" },
+]
