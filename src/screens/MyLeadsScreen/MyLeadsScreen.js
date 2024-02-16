@@ -6,6 +6,7 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
+import { Base64 } from 'js-base64';
 import React, { useState, useEffect } from "react";
 import { primaryColor, storageKeys } from "../../constants/constants";
 import {
@@ -19,7 +20,6 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import ButtonComponent from "../../components/Button/Button";
 import LeadsScreen from "../LeadsScreen/LeadsScreen";
-import DropDown from "react-native-paper-dropdown";
 import { Linking } from "react-native";
 import TextInputComponent from "../../components/TextInput/TextInput";
 import MultiSelectComponent from "../../components/DropDown/MultiSelectComponent";
@@ -32,11 +32,11 @@ import { leadDetailsAPI } from "../../api/LeadDetailsAPI/LeadDetailsAPI";
 import DropDownComponent from "../../components/DropDown/DropDown";
 // import { getprofileDataAPI } from '../../api/ProfileDataAPI/getProfileAPI';
 import { addNewLeadAPI } from "../../api/AddNewLeadAPI/addNewLeadAPI";
+import { countryCodeData } from './myLeadsFormData';
 
 
 const MyLeadsScreen = ({ navigation, route }) => {
-  const filteredRecords = route.params ? route.params.filteredRecords : [];
-  //console.log(filteredRecords);
+ const filteredRecords = route.params ? route.params.filteredRecords : [];
  const numberOfRecord = route.params ? route.params.numberOfRecord : "0" ;
   const [leadRecord, setLeadRecord] = useState();
   const [visible, setVisible] = useState(false);
@@ -47,38 +47,33 @@ const MyLeadsScreen = ({ navigation, route }) => {
   const [country_code, setcountry_code] = useState("+91");
   const [add_mobile, setAdd_mobile] = useState("");
   const [menuVisible, setMenuVisible] = useState(false);
-  const [visibleCoupon, setVisibleCoupon] = useState(false);
-  const [showDiscountCoupon, setshowDiscountCoupon] = useState(false);
-  const [inputData, setInputData] = useState();
-  const [discountCouponType, setDiscountCouponType] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState([]);
-  const [selectedCourse, setSelectedCourse] = useState([]);
+  // const [visibleCoupon, setVisibleCoupon] = useState(false);
+  // const [showDiscountCoupon, setshowDiscountCoupon] = useState(false);
+  // const [inputData, setInputData] = useState();
+  // const [discountCouponType, setDiscountCouponType] = useState("");
+  // const [selectedProduct, setSelectedProduct] = useState([]);
+  // const [selectedCourse, setSelectedCourse] = useState([]);
   const [leadCount, setLeadCount] = useState("0");
   const [courseData, setCourseData] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [leadID, setLeadID] = useState(null);
   const [mid, setmid] = useState(null);
- 
- 
-//function for handle drawer opening/closing
-  const handleOpenDrawer = () => navigation.openDrawer();
+  const url = `https://chat.henryharvin.com/login?member_id=${mid}`;
+
+
+  // const handleOpenDrawer = () => navigation.openDrawer();
   const getAPIData = async () => {
-    //const token = await getValueFromStorage(storageKeys.APP_SECURE);
-    //const email = await getValueFromStorage(storageKeys.EMAIL_ID);
     const memberId = await getValueFromStorage(storageKeys.MEMBER_ID);
-    setmid(memberId);
-    //console.log("token = " ,token)
-    console.log("memberID = ", memberId);
+    const m_id = memberId.toString();
+    setmid( Base64.encode(m_id));
     if (memberId) {
       try {
         const response = await leadDetailsAPI(memberId);
-        console.log("response message of app login =", response?.message);
+        // console.log("response message of app login =", response?.message);
         if (response?.message == "Login again (wrong token)") {
           doLogout();
         } else {
           setLeadCount(response?.records?.length);
-          setLeadID(response?.records?.id);
           setLeadRecord(response);
           setCourseData(response?.course_filter_p);
         }
@@ -93,11 +88,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
     getAPIData();
   }, []);
 
-  const countryCodeData = [
-    { label: "+91", value: "+91" },
-    { label: "+1", value: "+1" },
-    { label: "+97", value: "+97" },
-  ];
+ 
 
   const courseList = getCourseListData(courseData);
   const addnewLeadhandler = async () => {
@@ -186,11 +177,11 @@ const MyLeadsScreen = ({ navigation, route }) => {
   const menuItems = [
     {
       label: "Go to Events",
-      onPress: () => console.log("Go to Events clicked"),
+      onPress: () => navigation.navigate('PaymentLinkScreen'),
     },
     {
       label: "New Course Enquiry",
-      onPress: () => console.log("New Course Enquiry clicked"),
+      onPress: () => navigation.navigate("ScholarshipFormScreen"),
     },
     {
       label: "Start Auto Dial",
@@ -202,44 +193,25 @@ const MyLeadsScreen = ({ navigation, route }) => {
   const closeMenu = () => setMenuVisible(false);
   
  
-  const handleopenMenu = () => console.log("open menu by three dots");
+  // const handleopenMenu = () => console.log("open menu by three dots");
   //dropdown coupon data
-  const discountCoupon = [
-    { label: "Flat", value: "flat" },
-    { label: "Percentage", value: "percentage" },
-  ];
+  // const discountCoupon = [
+  //   { label: "Flat", value: "flat" },
+  //   { label: "Percentage", value: "percentage" },
+  // ];
 
   //function for visible/hide the discountCoupon
   // const showRequestCoupon = () => setVisibleCoupon(true);
   // const hideRequestCoupon = () => setVisibleCoupon(false);
-  const courses = [
-    { key: "1", value: "Mobiles", disabled: true },
-    { key: "2", value: "Appliances" },
-    { key: "3", value: "Cameras" },
-    { key: "4", value: "Computers", disabled: true },
-    { key: "5", value: "Vegetables" },
-    { key: "6", value: "Diary Products" },
-    { key: "7", value: "Drinks" },
-  ];
 
-  const Products = [
-    { key: "1", value: "Mobiles", disabled: true },
-    { key: "2", value: "Appliances" },
-    { key: "3", value: "Cameras" },
-    { key: "4", value: "Computers", disabled: true },
-    { key: "5", value: "Vegetables" },
-    { key: "6", value: "Diary Products" },
-    { key: "7", value: "Drinks" },
-  ];
-
-  const handleMsg = () => {
-    Alert.alert(
-      "HENRY HARVIN EDUCATION",
-      "This Feature will be Available Soon!",
-      [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-      { cancelable: true }
-    );
-  };
+  // const handleMsg = () => {
+  //   Alert.alert(
+  //     "HENRY HARVIN EDUCATION",
+  //     "This Feature will be Available Soon!",
+  //     [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+  //     { cancelable: true }
+  //   );
+  // };
 
   //leads counts show here in title varaiable
   const title = `My Leads (${numberOfRecord == 0 ? leadCount : numberOfRecord})`;
@@ -253,56 +225,38 @@ const MyLeadsScreen = ({ navigation, route }) => {
     padding: 20,
     borderRadius: 18,
   };
-  //dummy Data for DropDowns.
-  const data = [
-    { key: 1, value: "option 1" },
-    { key: 2, value: "option 2" },
-  ];
-  const genderList = [
-    {
-      label: "Male",
-      value: "male",
-    },
-    {
-      label: "Female",
-      value: "female",
-    },
-  ];
   //component for lead details page
   const renderItem = ({ item }) => (
     <LeadsScreen data={item} recordFilterData={leadRecord} />
   );
 
   return (
-    //App Header starts here
     <View style={{ flex: 1 }}>
       <Appbar.Header style={{ backgroundColor: primaryColor }} elevated="true">
-        <Appbar.Action
+        {/* <Appbar.Action
           size={30}
           iconColor="white"
           icon="format-align-left"
           onPress={handleOpenDrawer}
-        />
+        /> */}
         <Appbar.Content titleStyle={{ color: "white" }} title={title} />
         <Appbar.Action
           icon="whatsapp"
           size={30}
-          mode="outlined"
+          // mode="outlined"
           iconColor="white"
           onPress={() => {
-            Linking.openURL(
-              `https://chat.henryharvin.com/message?lead_id=${leadID}&member_id=${mid}`
-            );
+            Linking.openURL(url);
           }}
         />
         <Appbar.Action
           icon="filter-menu"
           size={30}
-          mode="outlined"
+          // mode="outlined"
           iconColor="white"
           onPress={() => navigation.navigate("FilterLead")}
         />
-        {/* <Menu
+        <Menu
             style={{ marginTop: 50 }}
             visible={menuVisible}
             onDismiss={closeMenu}
@@ -310,7 +264,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
               <Surface style={{ backgroundColor: primaryColor }}>
                 <Appbar.Action
                   icon="dots-vertical"
-                  mode="outlined"
+                  // mode="ouctlined"
                   size={30}
                   iconColor="white"
                   onPress={openMenu}
@@ -328,7 +282,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
                 />
               ))}
             </View>
-          </Menu> */}
+          </Menu>
       </Appbar.Header>
       {/*Scrollable Button form starts here */}
       <View className="flex-row mt-4">
@@ -525,7 +479,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
           {/* Request for coupon form-modal */}
           <View>
             <ScrollView>
-              <Portal className="rounded-lg">
+              {/* <Portal className="rounded-lg">
                 <Modal
                   className="mx-8"
                   visible={visibleCoupon}
@@ -557,7 +511,6 @@ const MyLeadsScreen = ({ navigation, route }) => {
                         />
                       </View>
                     </View>
-                    {/* conditionally rendering field based on their Type */}
                     {"percentage" == discountCouponType ? (
                       <View className="mt-4">
                         <TextInputComponent
@@ -592,7 +545,6 @@ const MyLeadsScreen = ({ navigation, route }) => {
                         </View>
                       </View>
                     )}
-                    {/* paper drop-down PaperSelect for multiple course */}
                     <View className="mt-4">
                       <MultiSelectComponent
                         placeholder="--Course--"
@@ -632,9 +584,9 @@ const MyLeadsScreen = ({ navigation, route }) => {
                         Submit
                       </ButtonComponent>
                     </View>
-                  </View>
-                </Modal>
-              </Portal>
+                  </View> */}
+                {/* </Modal>
+              </Portal> */}
             </ScrollView>
           </View>
           {/* coupon-modal form ends here */}

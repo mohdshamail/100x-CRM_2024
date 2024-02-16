@@ -30,7 +30,7 @@ Axios.interceptors.response.use(
     const { status } = error.response || {};
     if (status == 500 || status == 503) {
       dispatch(showError(status));
-      doLogout();
+      // doLogout();
     }
     if (status === UNAUTHORIZED) {
       //DoLogout

@@ -23,6 +23,9 @@ const LeadsScreen = ({data,recordFilterData}) => {
       <View>
       <Text className='mx-4 mt-2 text-xl text-slate-600'>{data?.name ? data?.name : "Name"}</Text>
      </View>
+     <View>
+      <Text className='mx-4 mt-2 text-md text-slate-500 font-bold'>LeadID:{data?.id ? data?.id : ""}</Text>
+     </View>
      </View>
      <View className="mx-2 mt-2">
       <View>

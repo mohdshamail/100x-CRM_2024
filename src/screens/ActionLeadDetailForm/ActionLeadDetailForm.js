@@ -7,6 +7,7 @@ import { hideLastFourDigits ,getValueFromStorage, customerCall } from "../../uti
 import SnackBar from "../../components/SnackBar/SnackBar";
 import { getDropdownValues,formatDate } from '../../utility/utility';
 import  { languageData } from '../LeadDetailScreen/filterFormData';
+import axios from "axios";
 import {
   Card,
   Text,
@@ -31,7 +32,7 @@ import { Linking } from "react-native";
 
 const ActionLeadDetailForm = () => {
   const [dataFromAPI, setDataFromAPI] = useState(null);
-
+// console.log(dataFromAPI)
   const route = useRoute();
   const { leadID ,filterRecordData } = route.params;
   const leadQty_filt = getDropdownValues(filterRecordData?.lead_quality_filt);
@@ -76,9 +77,6 @@ const ActionLeadDetailForm = () => {
   //  const data = formatDate(followUpDate)
   //  console.log(data);
  
-  const handleCopyToClipboard = () => {
-    console.log("first");
-  };
   const nameChangeHandler = (text) => {
     setName(text);
   };
@@ -105,6 +103,7 @@ const ActionLeadDetailForm = () => {
   };
   const countryCodeChangeHandler = (text) => {
     setCountryCode(text);
+   // Call the API when the text input changes
   };
   const altCountryCodeChangeHandler = (text) => {
     setAltCountryCode(text);
@@ -115,6 +114,45 @@ const ActionLeadDetailForm = () => {
   const altshopseeAmountHandler = (text) => {
     setAltShopseeEligibility(text);
   };
+
+  async function countryCodeData() {
+    try {
+        const response = await axios.get(`https://crm.henryharvin.com/portal-new/app-lswsheets/${leadID}?col=countryCode&value=${countryCode}`,{
+          headers: {
+            'Content-Type': 'text/html',
+          },
+        });
+        if(response?.data?.message){
+          Alert.alert(  "Success",
+          response?.data?.message,);
+        }else{
+          Alert.alert("Error in updating country Code!");
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }};
+
+    async function mobileNumberUpdate() {
+      try {
+          const response = await axios.get(`https://crm.henryharvin.com/portal-new/app-lswsheets/${leadID}?col=countryCode&value=${mobileNo}`,{
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          });
+          if(response?.data?.message){
+            Alert.alert(
+              "Success",
+              response?.data?.message,)
+          }else{
+            Alert.alert("Error in updating country Code!");
+          }
+      } catch (error) {
+          console.error('Error fetching data:', error);
+      }
+  }
+ 
+
+
   //call by ozonetel
   const ozoentelCallHandler = () => {
     const uid = dataFromAPI?.email;
@@ -127,6 +165,8 @@ const ActionLeadDetailForm = () => {
     const cn = dataFromAPI?.member?.ozonetel_campaign_name;
     const mob = dataFromAPI?.alt_mobile;
     customerCall(uid,cn,mob);
+    // console.log("uid,cn,mob = ",uid,cn,mob);
+    // console.log("customerCall =  " ,customerCall);
   };
 
   const getLeadPageData = async() => {
@@ -134,8 +174,11 @@ const ActionLeadDetailForm = () => {
    try{
     const leadDetailsPageData = await leadDetailFormAPI(id);
     const memberID = await getValueFromStorage(storageKeys.MEMBER_ID);
+    setName(leadDetailsPageData?.name );
+    setDescription(leadDetailsPageData?.description);
+    setRevivalComment(leadDetailsPageData?.revival_comment);
     setDataFromAPI(leadDetailsPageData);
-    console.log("countryCode", leadDetailsPageData?.countryCode);
+    //console.log("countryCode", leadDetailsPageData?.countryCode);
     setmemberId(memberID);
    }catch(error){
     console.log("response error" , error);
@@ -159,7 +202,6 @@ const ActionLeadDetailForm = () => {
  const submitForm = async () => {
   try {
     const followUpDateNew = formatDate(followUpDate);
-    console.log(followUpDateNew);
     
     const responseSubmitData = await submitleadDetailFormAPI(
       leadID,
@@ -173,7 +215,7 @@ const ActionLeadDetailForm = () => {
       lead_revival_commnt
     );
     const status = responseSubmitData?.success;
-    console.log("status = " ,status);
+    // console.log("status = " ,status);
     if(status){
       console.log( "Lead updated successfully",)
       setSuccessMsg("Successfully! Lead updated");
@@ -196,7 +238,7 @@ const ActionLeadDetailForm = () => {
     else{
       console.log("Error in submitting! ")
     }
-    console.log(responseSubmitData);
+    // console.log(responseSubmitData);
   } catch (error) {
     console.error("Error occurred while submitting form:", error);
     // Handle error as needed, e.g., show an error message to the user
@@ -309,8 +351,10 @@ const copyText = (text) => {
                       size={35}
                       onPress={() => {
                         Linking.openURL(
+                          //https://chat.henryharvin.com/message?lead_id=8488464&member_id=1539
                           `https://chat.henryharvin.com/message?lead_id=${leadID}&member_id=${memberId}`
                         );
+                       
                       }}
                     />
                   </View>
@@ -322,6 +366,7 @@ const copyText = (text) => {
                         style={{ backgroundColor: "white", height: 50 }}
                         label="Country code"
                         mode="contained"
+                        onBlur={countryCodeData}
                         value={countryCode}
                         onInputChange={countryCodeChangeHandler}
                       />
@@ -337,6 +382,7 @@ const copyText = (text) => {
                         rightIcon={"cellphone"}
                         mode="contained"
                         value={mobileNo}
+                        onBlur={mobileNumberUpdate}
                         keyboardType="numeric"
                         onInputChange={mobileNumberChangeHandler}
                       />
@@ -443,6 +489,7 @@ const copyText = (text) => {
                     rightIcon={"email"}
                     mode="contained"
                     value={altEmail_Id}
+                    onBlur={()=>{console.log("on blur function is called!!")}}
                     onInputChange={altEmailChangeHandler}
                   />
                   {/* <View className="mt-3 mb-4">
@@ -503,7 +550,8 @@ const copyText = (text) => {
                         style={{ backgroundColor: "white", height: 50 }}
                         label="Country code"
                         mode="contained"
-                        value={altCountryCode}
+                        onBlur={countryCodeData}
+                        value={countryCode}
                         onInputChange={altCountryCodeChangeHandler}
                        
                       />
@@ -519,6 +567,7 @@ const copyText = (text) => {
                         rightIcon={"cellphone"}
                         mode="contained"
                         value={altMobileNo}
+                        onBlur={()=>{console.log("on blur function is called!!")}}
                         keyboardType='numeric'
                         onInputChange={altMobileNumberChangeHandler}
                       />
@@ -596,7 +645,7 @@ const copyText = (text) => {
                   style={{ height: 50, backgroundColor: "white" }}
                   // placeholder={"Name" || ""}
                   value={name}
-                  placeholder={dataFromAPI?.name || "Enter Name"}
+                  placeholder={"Enter Name"}
                   onInputChange={nameChangeHandler}
                 />
               </View>
@@ -661,7 +710,7 @@ const copyText = (text) => {
                   onInputChange={descriptionChangeHandler}
                   style={{ height: 80, backgroundColor: "white" }}
                   value={add_description}
-                  placeholder={dataFromAPI?.description}
+                  placeholder={"Add Description"}
                 />
               </View>
               <View className="mt-3 mx-2">
@@ -671,7 +720,7 @@ const copyText = (text) => {
                 <TextInputComponent
                   value={lead_revival_commnt}
                   onInputChange={revivalCommentHandler}
-                  placeholder={dataFromAPI?.revival_comment}
+                  placeholder={"Add Revival comment"}
                   multiline
                   style={{ height: 80, backgroundColor: "white" }}
                 />

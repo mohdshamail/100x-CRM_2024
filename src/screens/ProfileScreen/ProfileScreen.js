@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { Avatar, Button, Card, Text, IconButton } from "react-native-paper";
 import { primaryColor } from "../../constants/constants";
@@ -9,11 +9,14 @@ import SnackBar from "../../components/SnackBar/SnackBar";
 import { getValueFromStorage, doLogout } from "../../utility/utility";
 import { storageKeys } from "../../constants/constants";
 import { profileDataAPI } from "../../api/ProfileDataAPI/profileDataAPI";
-import { useSelector } from "react-redux";
-import Loader from "../../components/Loader/Loader";
+// import { useSelector } from "react-redux";
+//import Loader from "../../components/Loader/Loader";
+import { getprofileDataAPI } from '../../api/ProfileDataAPI/getProfileAPI';
+import { StatusBar } from "expo-status-bar";
+
 
 const ProfileScreen = ({ navigation }) => {
-  const userData = useSelector((state) => state.userData.userData);
+  // const userData = useSelector((state) => state.userData.userData);
 
   // const [token, setToken] = useState(null);
   const [wcc, setWcc] = useState("");
@@ -23,6 +26,29 @@ const ProfileScreen = ({ navigation }) => {
   const [ozonetel_campaign_name, setOzonetel_campaign_name] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [successMsg, setSuccessMsg] = useState(null);
+  const [lswsheets_count, selswsheets_count] = useState(null);
+
+
+const getTodaysLeadCountData = async() => {
+  try{
+    const token = await getValueFromStorage(storageKeys.APP_SECURE);
+    const response = await getprofileDataAPI(token);
+    selswsheets_count(response?.lswsheets_count);
+    setWcc(response?.wcc);
+    setDid(response?.ozonetel_did);
+    setCc(response?.country_code);
+    setV_name(response?.v_name);
+    setOzonetel_campaign_name(response?.ozonetel_campaign_name);
+    setWhatsapp(response?.whatsapp_number);
+  }catch(error){
+    console.log("error in todays lead count = " , error);
+  }
+}
+useEffect(()=> {
+  getTodaysLeadCountData();
+},[]);
+
+
 
 
   const submitHandler = async () => {
@@ -51,37 +77,43 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <View className="flex-1">
-      {userData ? (
         <ScrollView>
+          <StatusBar/>
           <View
-            className="flex flex-col relative rounded-b-3xl"
+            className="flex flex-col relative  rounded-b-3xl"
             style={{ backgroundColor: primaryColor, height: "40%" }}
           >
-            <View className="flex items-start mt-8 mx-3">
+            {/* <View className="flex items-start mt-8 mx-3">
               <IconButton
                 icon="arrow-left"
                 iconColor={"white"}
                 size={35}
                 onPress={() => navigation.goBack()}
               />
-            </View>
-            <View className="justify-center items-center">
+            </View> */}
+            <View className="justify-center mt-20 items-center">
               <Avatar.Image className="bg-white" size={100} source={picture} />
-              <View className="mt-2">
+              <View className=" flex-row mt-2">
                 <Text
                   className="text-white font-extrabold"
                   variant="titleLarge"
                 >
-                  {userData ? userData?.v_name : "no-data"}
+                  {v_name || "no-data"}
                 </Text>
+                  <IconButton
+                  style={{ marginBottom: 1, marginTop: -1 }}
+                  icon="circle"
+                  iconColor= {lswsheets_count == 0 ? "red" : "green"}
+                  size={18}
+                />
               </View>
             </View>
-            <View className="mx-8 mt-6">
+            <View className="mx-8 mt-4">
               <Card className="bg-white rounded-3xl">
                 <Card.Content>
                   <View>
                     <Text variant="titleLarge" className="text-center">
-                      Today's Lead Count = {userData?.lswsheets_count}
+                      Today's Lead Count = {lswsheets_count  || "0"}
                     </Text>
                   </View>
                   <View>
@@ -108,7 +140,7 @@ const ProfileScreen = ({ navigation }) => {
                               // label="Country code"
                               mode="contained"
                               value={cc}
-                              placeholder={userData?.country_code || "+91"}
+                              placeholder={"cc"}
                               onInputChange={(text) => setCc(text)}
                             />
                           </View>
@@ -124,7 +156,7 @@ const ProfileScreen = ({ navigation }) => {
                               mode="contained"
                               keyboardType="numeric"
                               value={did}
-                              placeholder={userData?.ozonetel_did}
+                              placeholder={"DID/Zoom No."}
                               onInputChange={(text) => setDid(text)}
                             />
                           </View>
@@ -154,7 +186,7 @@ const ProfileScreen = ({ navigation }) => {
                             <TextInputComponent
                               style={{ backgroundColor: "white", height: 50 }}
                               // label="Country code"
-                              placeholder={userData?.wcc || "+91"}
+                              placeholder={"wcc"}
                               mode="contained"
                               value={wcc}
                               onInputChange={(text) => setWcc(text)}
@@ -168,7 +200,7 @@ const ProfileScreen = ({ navigation }) => {
                                 height: 50,
                               }}
                               // label="Add Mobile"
-                              placeholder={userData?.whatsapp_number}
+                              placeholder={"whatsapp No."}
                               rightIcon={"cellphone"}
                               mode="contained"
                               keyboardType="numeric"
@@ -193,7 +225,7 @@ const ProfileScreen = ({ navigation }) => {
                         // label="Name"
                         rightIcon={"pencil"}
                         mode="contained"
-                        placeholder={userData?.v_name}
+                        placeholder={"Enter Name"}
                         value={v_name}
                         onInputChange={(text) => setV_name(text)}
                       />
@@ -212,7 +244,7 @@ const ProfileScreen = ({ navigation }) => {
                             height: 50,
                           }}
                           // label="Name"
-                          placeholder={userData?.ozonetel_campaign_name}
+                          placeholder={"Enter Name"}
                           value={ozonetel_campaign_name}
                           rightIcon={"pencil"}
                           mode="contained"
@@ -232,16 +264,16 @@ const ProfileScreen = ({ navigation }) => {
               </Card>
             </View>
             {/* logout Button appears here */}
-            <View className="mx-6 mt-6">
+            <View className="mx-6 mt-4 mb-8">
               <Button onPress={() => doLogout()} icon="logout" mode="contained">
                 Logout
               </Button>
             </View>
           </View>
         </ScrollView>
-      ) : (
+      {/* ) : (
         <Loader />
-      )}
+      )} */}
       {successMsg && <SnackBar snackLabel="Ok" snackText={successMsg} />}
     </View>
   );

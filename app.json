@@ -31,7 +31,12 @@
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
-      ]
+      ],
+      "config": {
+        "ozonetelApiKey": {
+          "apiKey": "KK58c5bb5d513bdd3089cd083b5c610745"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -40,8 +45,9 @@
       "expo-localization"
     ],
     "extra": {
+      "api_key": "KK58c5bb5d513bdd3089cd083b5c610745",
       "eas": {
-        "projectId": "630cde6e-d000-4f2e-b66f-0342d52b8548"
+        "projectId": "cff8604b-ecad-42f3-bc6b-22b2fbc9a928"
       }
     }
   }

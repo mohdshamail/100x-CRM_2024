@@ -156,7 +156,9 @@ export function hideLastFourDigits(mobileNumber, countryCode) {
 
 //this ozonetel calling function 
 export const customerCall = async (uid, cn, mob) => {
+  console.log("inside the customerCall =" , uid, cn, mob)
   const url = `https://in1-ccaas-api.ozonetel.com/CAServices/AgentManualDial.php?api_key=KK58c5bb5d513bdd3089cd083b5c610745&username=henryharvin&agentID=${uid}&campaignName=${cn}&customerNumber=${mob}&UCID=true&uui=CallFromCRM`;
+  console.log("url", url);
   try {
     const response = await axios.get(url, {
       headers: {

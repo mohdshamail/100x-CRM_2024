@@ -297,8 +297,8 @@ const resetFilter = async() => {
               size={30}
               iconColor="white"
               icon="arrow-left"
-              //onPress={() => navigation.goBack()}
               onPress={() => navigation.goBack()}
+              // onPress={() => navigation.navigate('myLeadScreen')}
             />
             <Appbar.Content titleStyle={{ color: "white" }} title="Filter" />
           </Appbar.Header>
@@ -606,8 +606,10 @@ const resetFilter = async() => {
                     >
                       Filter Lead
                     </Button>
-                    <Button 
-                    mode="text"
+                   <View className='mt-2'>
+                   <Button 
+                    style={{borderColor:primaryColor,borderWidth:1}}
+                    mode="outlined"
                     onPress={resetFilter}
                     loading={reseting}
                     disabled={reseting ? true : false}
@@ -615,6 +617,7 @@ const resetFilter = async() => {
                     >
                       Reset
                     </Button>
+                   </View>
                   </View>
                 </>
               )}

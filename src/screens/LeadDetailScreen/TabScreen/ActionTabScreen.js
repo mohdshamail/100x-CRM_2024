@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, TouchableOpacity, Image, StyleSheet,Alert } from "react-native";
 import React, { useState } from "react";
 import DataTableComponent from '../../../components/DataTable/DataTableComponent';
 import { primaryColor } from "../../../constants/constants";
@@ -12,12 +12,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { customerCall,getDropdownValues } from "../../../utility/utility";
 import {languageData} from '../filterFormData'
 import { useNavigation } from '@react-navigation/native';
+import axios from "axios";
 
 
 const ActionTabScreen = ({ lead_data, filterRecordData }) => {
   const navigation = useNavigation();
   const leadID = lead_data?.id;
-  const [user_name, setUser_name] = useState("");
+  const [user_name, setUser_name] = useState(lead_data?.name);
   const [dateInput, setDateInput] = useState(null);
   const [language, setLanguage] = useState(null);
   const [leadqty, setLeadqty] = useState(null);
@@ -32,8 +33,8 @@ const ActionTabScreen = ({ lead_data, filterRecordData }) => {
   const [showtablePainArea , setShowTablePainArea] = useState(false);
   const [showtableCourse , setShowTableCourse] = useState(false);
 
-  console.log(language);
-  console.log(leadQtyList);
+  // console.log(language);
+  // console.log(leadQtyList);
 
   const nameChangeHandler = (text) => {
     setUser_name(text);
@@ -50,7 +51,7 @@ const products_filt = filterRecordData?.products.map(({id, name }) => ({
   value: id,
 }));
 
-
+console.log(language);
 
    //call by ozonetel
    const ozoentelCallHandler = () => {
@@ -64,6 +65,44 @@ const products_filt = filterRecordData?.products.map(({id, name }) => ({
     // { sno: 2, name: "Bob", date: "2023-12-05" },
     // { sno: 11, name: "Alice", date: "2023-11-21" },
   ]
+  console.log(leadID,user_name)
+
+  // async function nameChangeAPI() {
+  //   try {
+  //       const response = await axios.get(`https://crm.henryharvin.com/portal-new/amob/for/update?l_id=${leadID}&name=${user_name}`,{
+  //         headers: {
+  //           'Content-Type': 'text/html',
+  //         },
+  //       });
+  //       if(response?.data?.message){
+  //         Alert.alert(  "Success",
+  //         "Name updated Successfully");
+  //       }else{
+  //         Alert.alert("Error in updating country Code!");
+  //       }
+  //   } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //   }};
+
+    // async function languageChangeAPI() {
+    //   try {
+    //       const response = await axios.get(`https://crm.henryharvin.com/portal-new/app-lswsheets/${leadID}?col=language&value=${language}`,{
+    //         headers: {
+    //           'Content-Type': 'text/html',
+    //         },
+    //       });
+    //       if(response?.data?.message){
+    //         Alert.alert(  "Success",
+    //         response?.data?.message );
+    //       }else{
+    //         Alert.alert("Error in updating country Code!");
+    //       }
+    //   } catch (error) {
+    //       console.error('Error fetching data:', error);
+    //   }};
+
+
+
 
   const handleMsg = () => {
     setSuccessMsg("This feature will be available soon");
@@ -191,7 +230,7 @@ const products_filt = filterRecordData?.products.map(({id, name }) => ({
           </Card>
         </View>
         <View className="mx-8 mt-3">
-          <View className="">
+          {/* <View className="">
             <Text variant="titleMedium" className="mx-2">
               Full Name
             </Text>
@@ -199,14 +238,15 @@ const products_filt = filterRecordData?.products.map(({id, name }) => ({
               <TextInput
                 style={{ height: 50, marginTop: 3,backgroundColor:"white" }}
                 mode="outlined"
-                placeholder={lead_data?.name || "Enter Name"}
+                placeholder={"Enter Name"}
                 value={user_name}
+                onBlur={nameChangeAPI}
                 onChangeText={nameChangeHandler}
                 right={<TextInput.Icon icon={"pencil"} color={primaryColor} />}
               />
             </View>
-          </View>
-          <View className="mt-3">
+          </View> */}
+          {/* <View className="mt-3">
             <Text variant="titleMedium" className="mx-2">
               Language Candidate Speaks *
             </Text>
@@ -215,10 +255,11 @@ const products_filt = filterRecordData?.products.map(({id, name }) => ({
                 placeholder={lead_data?.language}
                 data={languageData}
                 value={language}
+                onSetValue={languageChangeAPI}
                 setValue={setLanguage}
               />
             </View>
-          </View>
+          </View> */}
           {/* date time picker starts here */}
           <View className="mt-3">
             <Text variant="titleMedium" className="mx-2">

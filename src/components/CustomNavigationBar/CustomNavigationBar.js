@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ImageBackground, StyleSheet, View } from "react-native";
 import { primaryColor } from "../../constants/constants";
 import {
@@ -17,13 +17,34 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { doLogout } from "../../utility/utility";
 import { useSelector } from "react-redux";
-import Loader  from '../Loader/Loader';
+//import Loader  from '../Loader/Loader';
+import { storageKeys } from "../../constants/constants";
+import { getValueFromStorage } from "../../utility/utility";
 import { useNavigation } from "@react-navigation/native";
 
 const CustomNavigationBar = (props) => {
-  const userdata = useSelector((state) => state.userData.userData);
+  // const userdata = useSelector((state) => state.userData.userData);
   const [successMsg, setSuccessMsg] = useState(null);
+  const [UserName, setUserName] = useState('');
+  const [mobileNo, setmobileNo] = useState('');
   const navigation = useNavigation();
+
+
+
+  const getUserInfo = async() => {
+    try{
+      const name = await getValueFromStorage(storageKeys.V_NAME);
+      const contactNumber = await getValueFromStorage(storageKeys.CONTACT_NO);
+      setUserName(name || '');
+      setmobileNo(JSON.parse(contactNumber) || '');
+    }catch(error){
+      console.log("error in getting data" , error);
+    }
+  };
+
+  useEffect(()=> {
+    getUserInfo();
+  },[])
 
   const helpAndFeedBackHandler = () => {
     setSuccessMsg("Please contact Tech Department");
@@ -38,11 +59,11 @@ const CustomNavigationBar = (props) => {
       {...props}
       // contentContainerStyle={{ backgroundColor: primaryColor }}
     >
-      {!userdata && <Loader />} 
+      {/* {!UserName && <Loader />}  */}
       <View style={styles.drawerContent}>
         <ImageBackground
           source={require("../../../assets/drawer-bg.jpg")}
-          style={{ padding: 20 }}
+          style={{ padding: 22,marginTop:-5 }}
         >
           <View style={styles.userInfoSection}>
             <Avatar.Image
@@ -50,23 +71,23 @@ const CustomNavigationBar = (props) => {
               source={require("../../../assets/avtar.png")}
             />
             <Title style={styles.title}>
-            {userdata ? userdata?.v_name : "Name" }
+            {UserName || "Name" }
             </Title>
             <View style={styles.row}>
               <View style={styles.section}>
                 <Caption style={styles.caption}>
-                {userdata ? userdata?.whatsapp_number : "contact No."}
+                {mobileNo || "contact No."}
                   </Caption>
               </View>
               <View style={styles.section}>
-                <IconButton
+                {/* <IconButton
                   style={{ marginBottom: 1, marginTop: -1 }}
                   icon="circle"
                   iconColor={userdata?.lswsheets_count === 0 ? "red" : "green"}
                   size={18}
-                />
+                /> */}
                 <IconButton
-                  style={{ marginBottom: 1, marginTop: -8 }}
+                  style={{ marginBottom: 1, marginTop: -9 }}
                   icon="chevron-down"
                   iconColor={"white"}
                   size={30}

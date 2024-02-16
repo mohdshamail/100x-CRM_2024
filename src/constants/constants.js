@@ -11,5 +11,7 @@ export const storageKeys = {
     APP_SECURE: "app-secure",
     USER_ROLES: "user-roles",
     MEMBER_ID: "member_id",
+    V_NAME: "v_name",
+    CONTACT_NO: "contact_no",
   };
 

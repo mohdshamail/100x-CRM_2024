@@ -109,7 +109,7 @@ const LoginScreen = ({ navigation }) => {
     
       try {
         const otpResponse = await validateOtpAPI(formState,actual_otp,email);
-        // console.log("otpResponse = " , otpResponse);
+        //console.log("otpResponse = " , otpResponse);
         const token = otpResponse?.token;
         const status = otpResponse?.success;
         const message = otpResponse?.message;
@@ -120,6 +120,8 @@ const LoginScreen = ({ navigation }) => {
           await setValueInStorage(storageKeys.USER_ROLES, loggedInState.sname);
           await setValueInStorage(storageKeys.EMAIL_ID, loggedInState.email);
           await setValueInStorage(storageKeys.MEMBER_ID, JSON.stringify(member_id));
+          await setValueInStorage(storageKeys.V_NAME, otpResponse?.member_id?.v_name );
+          await setValueInStorage(storageKeys.CONTACT_NO, JSON.stringify(otpResponse?.member_id?.mobile));
             // const passwordString = JSON.stringify(loggedInState.password);
           // await setValueInStorage(storageKeys.PASSWORD,passwordString);
           dispatch(setUserData(otpResponse?.member_id));

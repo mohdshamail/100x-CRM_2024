@@ -7,7 +7,7 @@ import FilterLead from "../../screens/FilterLead/FilterLead";
 import ScholarshipFormScreen from "../../screens/ScholarshipFormScreen/ScholarshipFormScreen";
 import ActionLeadDetailForm from "../../screens/ActionLeadDetailForm/ActionLeadDetailForm";
 import DataTableComponent from '../../components/DataTable/DataTableComponent';
-
+import PaymentLinkScreen from '../../screens/PaymentLinkScreen/PaymentLinkScreen';
 
 
 const Stack = createStackNavigator();
@@ -31,6 +31,10 @@ const MyLeadParentStack = () => {
         <Stack.Screen
           name={"ActionLeadDetailForm"}
           component={ActionLeadDetailForm}
+        />
+        <Stack.Screen
+          name={"PaymentLinkScreen"}
+          component={PaymentLinkScreen}
         />
       </Stack.Group>
     </Stack.Navigator>
