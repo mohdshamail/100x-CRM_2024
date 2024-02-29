@@ -39,6 +39,7 @@ const DatePickerComponent = ({ initialDate,onDateChange}) => {
               size={25}
               color={primaryColor}
               onPress={() => setShowDate(true)}
+              
             />
           }
         />

@@ -15,6 +15,7 @@ import ApiError from "./src/components/ApiError/ApiError";
 import { getValueFromStorage } from "./src/utility/utility";
 import { setToken } from "./src/redux/slices/tokenSlice";
 
+
 const fontConfig = {
   customVariant: {
     fontFamily: Platform.select({

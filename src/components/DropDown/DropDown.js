@@ -4,7 +4,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { primaryColor } from "../../constants/constants";
 
 // pass the array of objects in data prop and value ,isFocus prop to DropDownPicker component
-const DropDownComponent = ({ data, value, setValue, search,placeholder,onSetValue }) => {
+const DropDownComponent = ({ data, value, setValue, search,placeholder,}) => {
   const [isFocus, setIsFocus] = useState(false);
 
   return (
@@ -29,11 +29,11 @@ const DropDownComponent = ({ data, value, setValue, search,placeholder,onSetValu
         searchPlaceholder="Search"
         value={value} //current value
         onFocus={() => setIsFocus(true)}
-        onBlur={onSetValue}
+        onBlur={() => setIsFocus(false)}
         //setIsFocus(false)
         onChange={(item) => {
           setValue(item.value); //setState function
-          setIsFocus(false);
+            setIsFocus(false);
           // console.log("hello beta ")
         }}
       />

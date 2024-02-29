@@ -5,6 +5,10 @@ import { Card, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
+import LinearGradient from 'expo-linear-gradient';
+
+
 
 
 const LeadsScreen = ({data,recordFilterData}) => {
@@ -13,6 +17,7 @@ const LeadsScreen = ({data,recordFilterData}) => {
 
   return (  
     <ScrollView>
+  { data ? ( 
     <View className='mx-4 mb-2'>
      <Card className='bg-white'>
      <TouchableOpacity onPress={()=> navigation.navigate("LeadDetails" , {
@@ -62,7 +67,10 @@ const LeadsScreen = ({data,recordFilterData}) => {
      </View>
      </TouchableOpacity>
   </Card>
-    </View>
+    </View> ): 
+   (
+        <ShimmerPlaceHolder LinearGradient={LinearGradient} />
+)}
     </ScrollView>
    
   )

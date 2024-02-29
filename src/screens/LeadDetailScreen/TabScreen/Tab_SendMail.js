@@ -1,33 +1,21 @@
 import { View, StyleSheet } from "react-native";
-import React,{ useState } from "react";
+import React, { useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { cardBgcolor, primaryColor } from "../../../constants/constants";
-import { Button, Card, Text, Modal, Portal, Divider } from "react-native-paper";
+import { Button, Card, Divider, Text } from "react-native-paper";
 import SnackBar from "../../../components/SnackBar/SnackBar";
-import {sendEduvanzFormAPI } from '../../../api/LeadDetailFormAPI/sendEduvanzFormAPI';
-import { sendlmsAPI } from '../../../api/LeadDetailFormAPI/sendlmsAPI';
-import { sendCourseMailerAPI } from '../../../api/LeadDetailFormAPI/sendCourseMailerAPI';
-// import { getValueFromStorage } from "../../../utility/utility";
-// import { storageKeys } from "../../../constants/constants";
+import { sendEduvanzFormAPI } from "../../../api/LeadDetailFormAPI/sendEduvanzFormAPI";
+import { sendlmsAPI } from "../../../api/LeadDetailFormAPI/sendlmsAPI";
+import { sendCourseMailerAPI } from "../../../api/LeadDetailFormAPI/sendCourseMailerAPI";
+import { useNavigation } from "@react-navigation/native";
+import BottomSheet from "../../../components/BottomSheet/BottomSheet";
+import { AntDesign } from "@expo/vector-icons";
 
 
-
-const Tab_SendMail = ({leadEmail,leadID}) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+const Tab_SendMail = ({ leadEmail, leadID }) => {
+  const navigation = useNavigation();
+  const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [successMsg, setSuccessMsg] = useState(null);
-  // const [member_Id, setMember_Id] = useState(null);
-
-//   const getMemberID = async () => {
-//     const memberId = await getValueFromStorage(storageKeys.MEMBER_ID);
-//     if (memberId) {
-//       setMember_Id(memberId);
-//     }
-//   };
-//   useEffect(() => {
-//     getMemberID();
-//   }, []);
-
-//  console.log(member_Id);
 
 
   const handleMsg = () => {
@@ -35,59 +23,53 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
     setTimeout(() => {
       setSuccessMsg(false);
     }, 3000);
-  } 
+  };
 
-  const sendCourseMailer = async() => {
-    try{
+  const sendCourseMailer = async () => {
+    try {
       const mailerResponse = await sendCourseMailerAPI(leadID);
       if (mailerResponse[0] > 0) {
-        //console.log(mailerResponse);
         setSuccessMsg("Mailer sent Successfully!");
         setTimeout(() => {
-        setSuccessMsg(false);
-      }, 3000);
+          setSuccessMsg(false);
+        }, 3000);
       } else {
-       //  console.log(mailerResponse);
         setSuccessMsg("Error! Mailer is not Available");
         setTimeout(() => {
-        setSuccessMsg(false);
-      }, 3000);
-       
+          setSuccessMsg(false);
+        }, 3000);
       }
-    }catch(error){
-      console.log("error",error);
+    } catch (error) {
+      console.log("error", error);
     }
   };
 
-
-  const sendlms = async() => {  
-    try{
+  const sendlms = async () => {
+    try {
       const lmsResponse = await sendlmsAPI(leadID);
       setSuccessMsg(lmsResponse || "LMS sent Successfully!");
       setTimeout(() => {
-      setSuccessMsg(false);
-    }, 3000);
-    }catch(error){
-      console.log("error",error);
-    }
-  };
-
-  const sendEduvanzForm = async() => {
-    try{
-      const eduvanzFormResponse = await sendEduvanzFormAPI(leadEmail ,leadID);
-      if(eduvanzFormResponse == 1) {
-        setSuccessMsg("Eduvanz login form send successful");
-        setTimeout(() => {
         setSuccessMsg(false);
       }, 3000);
-      }
-      console.log("eduvanzFormResponse == " ,eduvanzFormResponse);
-    }catch(error){
-      console.log("error",error);
+    } catch (error) {
+      console.log("error", error);
     }
   };
 
-
+  const sendEduvanzForm = async () => {
+    try {
+      const eduvanzFormResponse = await sendEduvanzFormAPI(leadEmail, leadID);
+      if (eduvanzFormResponse == 1) {
+        setSuccessMsg("Eduvanz login form send successful");
+        setTimeout(() => {
+          setSuccessMsg(false);
+        }, 3000);
+      }
+      console.log("eduvanzFormResponse == ", eduvanzFormResponse);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   return (
     <View className="flex-1 mt-2">
@@ -108,8 +90,15 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button mode="contained" className="px-1"
-                  onPress={handleMsg}>
+                  <Button
+                    mode="contained"
+                    className="px-1"
+                    onPress={() => {
+                      navigation.navigate("PaymentLinkScreen", {
+                        leadID: leadID,
+                      });
+                    }}
+                  >
                     Send
                   </Button>
                 </View>
@@ -132,8 +121,7 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button  onPress={handleMsg}
-                  mode="contained" className="px-1">
+                  <Button onPress={handleMsg} mode="contained" className="px-1">
                     Send
                   </Button>
                 </View>
@@ -156,8 +144,7 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button  onPress={sendlms}
-                  mode="contained" className="px-1">
+                  <Button onPress={sendlms} mode="contained" className="px-1">
                     Send
                   </Button>
                 </View>
@@ -180,8 +167,7 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button  onPress={handleMsg}
-                   mode="contained" className="px-1">
+                  <Button onPress={handleMsg} mode="contained" className="px-1">
                     Send
                   </Button>
                 </View>
@@ -204,8 +190,7 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button  onPress={handleMsg}
-                   mode="contained" className="px-1">
+                  <Button onPress={handleMsg} mode="contained" className="px-1">
                     Send
                   </Button>
                 </View>
@@ -228,8 +213,11 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button  onPress={sendEduvanzForm}
-                   mode="contained" className="px-1">
+                  <Button
+                    onPress={sendEduvanzForm}
+                    mode="contained"
+                    className="px-1"
+                  >
                     Send
                   </Button>
                 </View>
@@ -252,8 +240,9 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button  onPress={sendCourseMailer}
-                  mode="contained">Mailer</Button>
+                  <Button onPress={sendCourseMailer} mode="contained">
+                    Mailer
+                  </Button>
                 </View>
               </View>
             </Card>
@@ -274,8 +263,7 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button  onPress={handleMsg}
-                  mode="contained" className="px-1">
+                  <Button onPress={handleMsg} mode="contained" className="px-1">
                     Send
                   </Button>
                 </View>
@@ -298,65 +286,47 @@ const Tab_SendMail = ({leadEmail,leadID}) => {
                   </Text>
                 </View>
                 <View>
-                  <Button    onPress={handleMsg}
-                    mode="contained" className="px-1">
-                    Send
+                  <Button
+                    className='text-white bg-rose-700'
+                    onPress={() => {
+                      setIsSheetVisible(!isSheetVisible);
+                    }}
+                    mode="contained"
+                  >
+                   Mailer
                   </Button>
-                  {/* modal appear here */}
-                  <View>
-                    <ScrollView>
-                      <Portal className="rounded-lg">
-                        <Modal
-                          className="mx-8"
-                          visible={isModalVisible}
-                          onDismiss={setIsModalVisible}
-                          contentContainerStyle={styles.containerStyle}
-                        >
-                          <View>
-                            <View>
-                              <Text
-                                style={{ color: primaryColor, fontSize: 15 }}
-                                className="text-xl   text-center"
-                              >
-                                Check Shopse Eligibility
-                              </Text>
-                            </View>
-                            <Divider className="" />
-                          </View>
-                          <View className="mt-1">
-                           
-                         
-                          </View>
-                        </Modal>
-                      </Portal>
-                    </ScrollView>
-                  </View>
-                  {/* model ends here */}
                 </View>
               </View>
             </Card>
           </View>
-          {/* 10th card starts here */}
-          {/* <View className="flex mt-2">
-            <Card
-              style={{
-                backgroundColor: "white",
-                height: 80,
-                justifyContent: "center",
-              }}
-            >
-             <View className='flex-row justify-between mx-4'>
-               <View>
-                  <Text variant='titleMedium' className='mt-1'>Send Automated Payment Link</Text>
-               </View>
-               <View>
-                  <Button mode="contained">Send</Button>
-               </View>
-             </View>
-            </Card>
-            </View> */}
         </View>
       </ScrollView>
+      <View>
+        {isSheetVisible && (
+          <BottomSheet>
+            <View>
+              <View className="flex flex-1 items-end">
+                <AntDesign
+                  name="closecircleo"
+                  size={26}
+                  color={primaryColor}
+                  onPress={() => {
+                    setIsSheetVisible(false);
+                  }}
+                />
+              </View>
+              <View className="mt-3 mx-3">
+                <View className='flex-row justify-between'>
+                  <Text>ID</Text>
+                  <Text>Subject</Text>
+                  <Text>Action</Text>
+                </View>
+               <Divider style={{borderWidth:0.2}}/>
+              </View>
+            </View>
+          </BottomSheet>
+        )}
+      </View>
       {successMsg && <SnackBar snackLabel="Ok" snackText={successMsg} />}
     </View>
   );

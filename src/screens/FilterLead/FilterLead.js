@@ -335,6 +335,7 @@ const resetFilter = async() => {
                         backgroundColor: "white",
                         borderWidth: 1,
                       }}
+                      onBlur={submitFilterHandler}
                       placeholder="Name,Email,Mobile"
                       onChangeText={onChangeSearch}
                       value={valall}
@@ -359,7 +360,7 @@ const resetFilter = async() => {
                   <View className="mt-2">
                     <Text variant="titleMedium">Campaign</Text>
                     <DropDownComponent
-                      search={false}
+                      search={true}
                       data={campaignDropDownData}
                       value={camp_filter}
                       setValue={setCamp_filter}
@@ -414,7 +415,7 @@ const resetFilter = async() => {
                       <View className="mt-2">
                         <Text variant="titleMedium">Certificate status</Text>
                         <DropDownComponent
-                          search={false}
+                          search={true}
                           data={certificateStatusDropDownData}
                           value={certificate_status}
                           setValue={setcertificate_status}
@@ -423,7 +424,7 @@ const resetFilter = async() => {
                       <View className="mt-2">
                         <Text variant="titleMedium">Sort</Text>
                         <DropDownComponent
-                          search={false}
+                          search={true}
                           data={sortDropDownData}
                           value={sortby}
                           setValue={setSortBy}
@@ -432,7 +433,7 @@ const resetFilter = async() => {
                       <View className="mt-2">
                         <Text variant="titleMedium">Country</Text>
                         <DropDownComponent
-                          search={false}
+                          search={true}
                           data={countryDropDownData}
                           value={countryFilterData}
                           setValue={setCountryFilterData}

@@ -59,6 +59,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [mid, setmid] = useState(null);
   const url = `https://chat.henryharvin.com/login?member_id=${mid}`;
+ 
 
 
   // const handleOpenDrawer = () => navigation.openDrawer();
@@ -175,13 +176,13 @@ const MyLeadsScreen = ({ navigation, route }) => {
   
   // menu items appear here
   const menuItems = [
-    {
-      label: "Go to Events",
-      onPress: () => navigation.navigate('PaymentLinkScreen'),
-    },
+    // {
+    //   label: "Go to Events",
+    //   onPress: () => navigation.navigate('PaymentLinkScreen'),
+    // },
     {
       label: "New Course Enquiry",
-      onPress: () => navigation.navigate("ScholarshipFormScreen"),
+      onPress: () => navigation.navigate("NewCourseEnquiry"),
     },
     {
       label: "Start Auto Dial",
@@ -364,6 +365,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
                                 placeholder={"Mobile No"}
                                 label={"Mobile"}
                                 keyboardType="numeric"
+                                onBlur={addnewLeadhandler}
                                 value={add_mobile}
                                 style={{
                                   backgroundColor: "white",
