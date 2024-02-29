@@ -299,7 +299,7 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
           </View>
         </View>
       </ScrollView>
-{/* BottomSheet Appears Here for Sending Mailer */}
+      {/* BottomSheet Appears Here for Sending Mailer */}
       {isSheetVisible && (
         <BottomSheet>
           <View>
@@ -406,26 +406,26 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
 
 export default Tab_SendMail;
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    backgroundColor: cardBgcolor,
-    padding: 20,
-    marginHorizontal: 20,
-    borderRadius: 20,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  text: {
-    color: primaryColor,
-    fontWeight: "bold",
-    fontSize: 15,
-    paddingHorizontal: 10,
-    marginTop: 8,
-  },
-  containerStyle: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 18,
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {sss
+//     flexDirection: "row",
+//     backgroundColor: cardBgcolor,
+//     padding: 20,
+//     marginHorizontal: 20,
+//     borderRadius: 20,
+//     alignItems: "center",
+//     marginTop: 10,
+//   },
+//   text: {
+//     color: primaryColor,
+//     fontWeight: "bold",
+//     fontSize: 15,
+//     paddingHorizontal: 10,
+//     marginTop: 8,
+//   },
+//   containerStyle: {
+//     backgroundColor: "white",
+//     padding: 20,
+//     borderRadius: 18,
+//   },
+// });
