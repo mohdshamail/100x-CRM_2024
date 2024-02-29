@@ -2,7 +2,7 @@ import { View, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { cardBgcolor, primaryColor } from "../../../constants/constants";
-import { Button, Card, Divider, Text } from "react-native-paper";
+import { Button, Card, Divider, Headline, Text } from "react-native-paper";
 import SnackBar from "../../../components/SnackBar/SnackBar";
 import { sendEduvanzFormAPI } from "../../../api/LeadDetailFormAPI/sendEduvanzFormAPI";
 import { sendlmsAPI } from "../../../api/LeadDetailFormAPI/sendlmsAPI";
@@ -11,12 +11,10 @@ import { useNavigation } from "@react-navigation/native";
 import BottomSheet from "../../../components/BottomSheet/BottomSheet";
 import { AntDesign } from "@expo/vector-icons";
 
-
 const Tab_SendMail = ({ leadEmail, leadID }) => {
   const navigation = useNavigation();
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [successMsg, setSuccessMsg] = useState(null);
-
 
   const handleMsg = () => {
     setSuccessMsg("This feature will be available soon");
@@ -287,13 +285,13 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
                 </View>
                 <View>
                   <Button
-                    className='text-white bg-rose-700'
+                    // className="text-white bg-rose-700"
                     onPress={() => {
                       setIsSheetVisible(!isSheetVisible);
                     }}
                     mode="contained"
                   >
-                   Mailer
+                    Mailer
                   </Button>
                 </View>
               </View>
@@ -301,32 +299,106 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
           </View>
         </View>
       </ScrollView>
-      <View>
-        {isSheetVisible && (
-          <BottomSheet>
-            <View>
-              <View className="flex flex-1 items-end">
-                <AntDesign
-                  name="closecircleo"
-                  size={26}
-                  color={primaryColor}
-                  onPress={() => {
-                    setIsSheetVisible(false);
-                  }}
-                />
+{/* BottomSheet Appears Here for Sending Mailer */}
+      {isSheetVisible && (
+        <BottomSheet>
+          <View>
+            <View
+              style={{ marginTop: -60 }}
+              className="flex flex-1 items-center"
+            >
+              <AntDesign
+                name="closecircleo"
+                size={30}
+                color={"white"}
+                onPress={() => {
+                  setIsSheetVisible(false);
+                }}
+              />
+            </View>
+            <View className="mt-8 mx-3">
+              <View>
+                <Headline className="text-center text-slate-600">
+                  Send Non Product Mailer
+                </Headline>
               </View>
-              <View className="mt-3 mx-3">
-                <View className='flex-row justify-between'>
-                  <Text>ID</Text>
-                  <Text>Subject</Text>
-                  <Text>Action</Text>
-                </View>
-               <Divider style={{borderWidth:0.2}}/>
+              <View className="flex-row justify-between mt-3">
+                <Text
+                  className="text-lg font-bold"
+                  style={{ color: primaryColor }}
+                >
+                  ID
+                </Text>
+                <Text
+                  className="text-lg font-bold"
+                  style={{ color: primaryColor }}
+                >
+                  Subject
+                </Text>
+                <Text
+                  className="text-lg font-bold"
+                  style={{ color: primaryColor }}
+                >
+                  Action
+                </Text>
               </View>
             </View>
-          </BottomSheet>
-        )}
-      </View>
+            <Divider style={{ borderWidth: 0.2, marginTop: 4 }} />
+            <View className="flex-row mt-2">
+              <View className="mx-3 mt-2">
+                <Text>1-</Text>
+              </View>
+              <View style={{ maxWidth: 230 }}>
+                <Text className="ml-2 mt-2">
+                  Seat allotment Details & Deliverable in SAP HR | Henry
+                  Harvin(R) Education
+                </Text>
+              </View>
+              <View>
+                <Button className="mx-10 mt-3 bg-rose-600" mode="contained">
+                  Send
+                </Button>
+              </View>
+            </View>
+            <Divider style={{ borderWidth: 0.2, marginTop: 4 }} />
+            <View className="flex-row mt-2">
+              <View className="mx-3 mt-2">
+                <Text>2-</Text>
+              </View>
+              <View style={{ maxWidth: 230 }}>
+                <Text className="ml-1 mt-2">
+                  Regarding seat cancellation in Blockchain Course from the
+                  Henry Harvin(R) Education
+                </Text>
+              </View>
+              <View>
+                <Button className="mx-3 mt-3 bg-rose-600" mode="contained">
+                  Send
+                </Button>
+              </View>
+            </View>
+            <Divider style={{ borderWidth: 0.2, marginTop: 4 }} />
+            <View className="flex-row mt-2">
+              <View className="mx-2 mt-2">
+                <Text>3-</Text>
+              </View>
+              <View style={{ maxWidth: 230 }}>
+                <Text className="ml-2 mt-2">
+                  Debarred from Henry Harvin Scholarship Program with final
+                  reminder
+                </Text>
+              </View>
+              <View>
+                <Button className="mx-8 mt-3 bg-rose-600" mode="contained">
+                  Send
+                </Button>
+              </View>
+            </View>
+            <Divider style={{ borderWidth: 0.2, marginTop: 4 }} />
+          </View>
+        </BottomSheet>
+      )}
+      <View></View>
       {successMsg && <SnackBar snackLabel="Ok" snackText={successMsg} />}
     </View>
   );
