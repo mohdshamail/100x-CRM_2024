@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Alert } from "react-native";
+import axios from "axios";
 import {
   Icon,
   Avatar,
@@ -19,11 +20,12 @@ import SnackBar from "../../../components/SnackBar/SnackBar";
 import { useNavigation } from "@react-navigation/native";
 // import DataTableComponent from "../../../components/DataTable/DataTableComponent";
 
-const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
+const LeadDescriptionTab = ({ lead_data, filterRecordData, mid }) => {
   const leadID = lead_data?.id;
   const navigation = useNavigation();
   const [visible_3, setVisible_3] = useState(false);
   const [successMsg, setSuccessMsg] = useState(null);
+  const [productComment, setproductComment] = useState("");
   const [campaignValue, setCampaignValue] = useState(lead_data?.lead_campaign);
   const [description2Value, setDescription2Value] = useState(
     lead_data?.description2
@@ -90,6 +92,110 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
         item["cdate"] + "\n" + item["product_comment"] + "\n";
     }
   });
+
+  async function addProductCommentAPI() {
+    try {
+      const response = await axios.get(
+        `https://crm.henryharvin.com/portal-new/app_add_productc?l_id=${leadID}&des=${productComment}&mid=${mid}`,
+        {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        }
+      );
+      console.log("product LeadQty Added = ", response?.data?.success);
+      if (response?.data?.success) {
+        setproductComment("");
+        hideModal_3();
+        setSuccessMsg("Success, Product Comment Added successfully!");
+        setTimeout(() => {
+          setSuccessMsg(false);
+        }, 3000);
+      } else {
+        Alert.alert("Error", "Something went wrong!");
+        setproductComment("");
+        hideModal_3();
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  // adding campaign api
+  async function addCampaignAPI() {
+    try {
+      const response = await axios.get(
+        `https://crm.henryharvin.com/portal-new/appchangeCampaign?lid=${leadID}&value=${campaignValue}`,
+        {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        }
+      );
+      // console.log("campaign = ", response);
+      if (response?.status == "200") {
+        setSuccessMsg("Success, Campaign Added successfully!");
+        setTimeout(() => {
+          setSuccessMsg(false);
+        }, 3000);
+      } else {
+        Alert.alert("Error", "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+  // adding Description2 api
+  async function addDescription2API() {
+    try {
+      const response = await axios.get(
+        `https://crm.henryharvin.com/portal-new/app-des2-for-update?l_id=${leadID}&name=${description2Value}&mid=${mid}`,
+        {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        }
+      );
+      // console.log("addDescription2API " ,response);
+      if (response?.data?.success) {
+        setSuccessMsg("Success, Description2 Added successfully!");
+        setTimeout(() => {
+          setSuccessMsg(false);
+        }, 3000);
+      } else if(response?.data?.error){
+        Alert.alert("Error",response?.data?.message ? response?.data?.message : "Kindly add language First!" );
+      }
+      else {
+        Alert.alert("Error", "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+  //Adding DIG api
+  async function addDIGAPI() {
+    try {
+      const response = await axios.get(
+        `https://crm.henryharvin.com/portal-new/app-dig-for-update?l_id=${leadID}&name=${digValue}&mid=${mid}`,
+        {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        }
+      );
+      // console.log("addDIGAPI" , response);
+      if (response?.data?.success) {
+        setSuccessMsg("Success, DIG Added successfully!");
+        setTimeout(() => {
+          setSuccessMsg(false);
+        }, 3000);
+      } else {
+        Alert.alert("Error", "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
 
   return (
     <View className="flex-1 mt-3">
@@ -249,18 +355,18 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                   >
                     Pending Payment
                   </Text>
-                 <View>
-                   <Text variant="titleMedium" className="mx-2">
-                    {lead_data?.pending_amount
-                      ? lead_data?.pending_amount
-                      : "No record Found"}
-                  </Text>
-                 </View>
+                  <View>
+                    <Text variant="titleMedium" className="mx-2">
+                      {lead_data?.pending_amount
+                        ? lead_data?.pending_amount
+                        : "No record Found"}
+                    </Text>
+                  </View>
                 </View>
               </Card>
             </View>
             <View className="mt-2">
-              <Card style={{ backgroundColor: "white", height: 'auto' }}>
+              <Card style={{ backgroundColor: "white", height: "auto" }}>
                 <View className="mx-5 mt-2">
                   <Text
                     variant="titleMedium"
@@ -268,11 +374,11 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                   >
                     Customer Support History
                   </Text>
-                 <View className='flex-1 mb-10'>
-                 <Text variant="titleMedium" className="mx-2">
-                    No History.
-                  </Text>
-                 </View>
+                  <View className="flex-1 mb-10">
+                    <Text variant="titleMedium" className="mx-2">
+                      No History.
+                    </Text>
+                  </View>
                 </View>
               </Card>
             </View>
@@ -292,7 +398,7 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                   </Text>
                   <View className="mt-3 mx-4">
                     <Tooltip title="Add New" enterTouchDelay={100}>
-                      <TouchableOpacity   
+                      <TouchableOpacity
                         onPress={() =>
                           navigation.navigate("ActionLeadDetailForm", {
                             leadID: leadID,
@@ -344,7 +450,6 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                             filterRecordData: filterRecordData,
                           })
                         }
-
                       >
                         <Avatar.Icon size={40} icon="pencil" />
                       </TouchableOpacity>
@@ -381,6 +486,10 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                     <View className="mt-4">
                       <TextInput
                         multiline
+                        value={productComment}
+                        onChangeText={(text) => {
+                          setproductComment(text);
+                        }}
                         numberOfLines={10}
                         mode="outlined"
                         style={{ backgroundColor: "white", padding: 5 }}
@@ -390,7 +499,11 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                       <Button mode="outlined" onPress={hideModal_3}>
                         Close
                       </Button>
-                      <Button mode="contained" className="mx-2 px-1">
+                      <Button
+                        onPress={addProductCommentAPI}
+                        mode="contained"
+                        className="mx-2 px-1"
+                      >
                         Add
                       </Button>
                     </View>
@@ -455,11 +568,7 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                         className="mb-10 bg-white leading-6"
                         value={campaignValue}
                         onChangeText={(text) => setCampaignValue(text)}
-                        onBlur={() => {
-                          console.log(
-                            "On Blur function is called in  Campaign field"
-                          );
-                        }}
+                        onBlur={() => addCampaignAPI()}
                       />
                     </Card.Content>
                   </View>
@@ -483,11 +592,12 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                       placeholder={"Enter Description"}
                       value={description2Value}
                       onChangeText={(text) => setDescription2Value(text)}
-                      onBlur={() => {
-                        console.log(
-                          "On Blur function is called in  Description 2 field"
-                        );
-                      }}
+                      onBlur={() => addDescription2API()}
+                      // onBlur={() => {
+                      //   console.log(
+                      //     "On Blur function is called in  Description 2 field"
+                      //   );
+                      // }}
                       multiline={true}
                     />
                   </Card.Content>
@@ -512,9 +622,10 @@ const LeadDescriptionTab = ({ lead_data,filterRecordData }) => {
                       placeholder={"Enter DIG here"}
                       value={digValue}
                       onChangeText={(text) => setDigValue(text)}
-                      onBlur={() => {
-                        console.log("On Blur function is called in  dig field");
-                      }}
+                      onBlur={() => addDIGAPI()}
+                      // onBlur={() => {
+                      //   console.log("On Blur function is called in  dig field");
+                      // }}
                     />
                   </Card.Content>
                 </View>

@@ -9,6 +9,8 @@ import ActionLeadDetailForm from "../../screens/ActionLeadDetailForm/ActionLeadD
 import DataTableComponent from '../../components/DataTable/DataTableComponent';
 import PaymentLinkScreen from '../../screens/PaymentLinkScreen/PaymentLinkScreen';
 import NewCourseEnquiry from '../../screens/NewCourseEnquiry/NewCourseEnquiry';
+import RequestForCoupon from '../../screens/RequestForCoupon/RequestForCoupon';
+import CourseMailer from '../../screens/CourseMailer/CourseMailer';
 
 
 const Stack = createStackNavigator();
@@ -40,6 +42,14 @@ const MyLeadParentStack = () => {
         <Stack.Screen
           name={"NewCourseEnquiry"}
           component={NewCourseEnquiry}
+        />
+        <Stack.Screen
+          name={"RequestForCoupon"}
+          component={RequestForCoupon}
+        />
+        <Stack.Screen
+          name={"CourseMailer"}
+          component={CourseMailer}
         />
       </Stack.Group>
     </Stack.Navigator>

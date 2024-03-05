@@ -59,6 +59,7 @@ const LeadDetailScreen = () => {
             <LeadDescriptionTab
               filterRecordData={filterRecordData}
               lead_data={leadData}
+              mid={mid}
             />
           </TabScreen>
           <TabScreen

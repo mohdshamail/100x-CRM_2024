@@ -1,8 +1,16 @@
-import { View, StyleSheet } from "react-native";
+import { View, Alert } from "react-native";
 import React, { useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
-import { cardBgcolor, primaryColor } from "../../../constants/constants";
-import { Button, Card, Divider, Headline, Text } from "react-native-paper";
+import { primaryColor } from "../../../constants/constants";
+import {
+  Button,
+  Card,
+  Divider,
+  Headline,
+  Text,
+  Modal,
+  Portal,
+} from "react-native-paper";
 import SnackBar from "../../../components/SnackBar/SnackBar";
 import { sendEduvanzFormAPI } from "../../../api/LeadDetailFormAPI/sendEduvanzFormAPI";
 import { sendlmsAPI } from "../../../api/LeadDetailFormAPI/sendlmsAPI";
@@ -10,11 +18,22 @@ import { sendCourseMailerAPI } from "../../../api/LeadDetailFormAPI/sendCourseMa
 import { useNavigation } from "@react-navigation/native";
 import BottomSheet from "../../../components/BottomSheet/BottomSheet";
 import { AntDesign } from "@expo/vector-icons";
+import MultiSelectComponent from "../../../components/DropDown/MultiSelectComponent";
 
 const Tab_SendMail = ({ leadEmail, leadID }) => {
   const navigation = useNavigation();
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [successMsg, setSuccessMsg] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const [selectCourse, setSelectCourse] = useState([]);
+
+  const containerStyle = {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 18,
+  };
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
 
   const handleMsg = () => {
     setSuccessMsg("This feature will be available soon");
@@ -67,6 +86,12 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
     } catch (error) {
       console.log("error", error);
     }
+  };
+
+  const data = [{ label: "course", value: "course_id" }];
+
+  const courseMailerHandler = () => {
+    Alert.alert("Sorry!", "This Mailer is not in use.");
   };
 
   return (
@@ -261,12 +286,58 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
                   </Text>
                 </View>
                 <View>
-                  <Button onPress={handleMsg} mode="contained" className="px-1">
+                  <Button onPress={showModal} mode="contained" className="px-1">
                     Send
                   </Button>
                 </View>
               </View>
             </Card>
+          </View>
+          <View className="flex-1">
+            <Portal className="flex-1 rounded-lg">
+              <Modal
+                className="mx-8"
+                visible={visible}
+                onDismiss={hideModal}
+                contentContainerStyle={containerStyle}
+              >
+                <View>
+                  <Headline
+                    style={{ color: primaryColor }}
+                    className="text-center font-bold"
+                  >
+                    Send Free Courses
+                  </Headline>
+                </View>
+                <Text className="text-lg text-slate-700 mt-1">
+                  Select Course
+                </Text>
+                 <View className='flex-1 mb-16'>
+                 <MultiSelectComponent
+                    data={data}
+                    placeholder={"--Select Course--"}
+                    selected={selectCourse}
+                    setSelected={setSelectCourse}
+                  />
+                 </View>
+                <View className="flex-row justify-end">
+                      <Button
+                        onPress={()=> {console.log("Send Free Course! Successfully.")}}
+                        //loading={loading}
+                        mode="contained"
+                      >
+                        Send
+                      </Button>
+                      <Button
+                        className="mx-2"
+                        mode="outlined"
+                        onPress={hideModal}
+                      >
+                        Cancel
+                      </Button>
+                    </View>
+              </Modal>
+            </Portal>
           </View>
           {/* 9th card starts here */}
           <View className="flex mt-2 mb-2">
@@ -355,7 +426,11 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
                 </Text>
               </View>
               <View>
-                <Button className="mx-10 mt-3 bg-rose-600" mode="contained">
+                <Button
+                  className="mx-10 mt-3 bg-rose-600"
+                  mode="contained"
+                  onPress={courseMailerHandler}
+                >
                   Send
                 </Button>
               </View>
@@ -372,7 +447,11 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
                 </Text>
               </View>
               <View>
-                <Button className="mx-3 mt-3 bg-rose-600" mode="contained">
+                <Button
+                  className="mx-3 mt-3 bg-rose-600"
+                  mode="contained"
+                  onPress={courseMailerHandler}
+                >
                   Send
                 </Button>
               </View>
@@ -389,7 +468,11 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
                 </Text>
               </View>
               <View>
-                <Button className="mx-8 mt-3 bg-rose-600" mode="contained">
+                <Button
+                  className="mx-8 mt-3 bg-rose-600"
+                  mode="contained"
+                  onPress={courseMailerHandler}
+                >
                   Send
                 </Button>
               </View>

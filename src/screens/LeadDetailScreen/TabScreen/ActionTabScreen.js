@@ -1,5 +1,5 @@
 import { View, StyleSheet, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTableComponent from "../../../components/DataTable/DataTableComponent";
 import { primaryColor } from "../../../constants/constants";
 import {
@@ -11,53 +11,92 @@ import {
   Portal,
   Headline,
 } from "react-native-paper";
-import DateAndTimePicker from "../../../components/DateAndTimePicker/DateAndTimePicker";
+import axios from "axios";
+//import DateAndTimePicker from "../../../components/DateAndTimePicker/DateAndTimePicker";
 import DropDownComponent from "../../../components/DropDown/DropDown";
 import { ScrollView } from "react-native-gesture-handler";
 import SnackBar from "../../../components/SnackBar/SnackBar";
 import { customerCall, getDropdownValues } from "../../../utility/utility";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+import { getSharedLeadAPI } from "../../../api/LeadDetailFormAPI/SharedLeadAPI/getSharedLeadAPI";
+import { sharedLeadAPI } from "../../../api/LeadDetailFormAPI/SharedLeadAPI/sharedLeadAPI";
 
 const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
   const navigation = useNavigation();
   const leadID = lead_data?.id;
-  const [user_name, setUser_name] = useState(lead_data?.name);
-  const [dateInput, setDateInput] = useState(null);
-  const [language, setLanguage] = useState(null);
-  const [leadqty, setLeadqty] = useState(null);
-  const [leadQtyList, setLeadQtyList] = useState(false);
-  const [painAreaQty, setPainAreaQty] = useState(null);
-  const [courseQty, setCourseQty] = useState(null);
-  const [productQty, setProductQty] = useState(null);
-  const [productData, setProductsData] = useState(null);
+  // const [user_name, setUser_name] = useState(lead_data?.name);
+  // const [dateInput, setDateInput] = useState(null);
+  // const [language, setLanguage] = useState(null);
+  // const [leadqty, setLeadqty] = useState(null);
+  // const [leadQtyList, setLeadQtyList] = useState(false);
+  // const [painAreaQty, setPainAreaQty] = useState(null);
+  // const [courseQty, setCourseQty] = useState(null);
+  const [productQty, setProductQty] = useState("");
+  const [productData, setProductsData] = useState("");
   const [cpvisible, setCPVisible] = useState(false);
   const [ipvisible, setIPVisible] = useState(false);
   const [shareLeadvisible, setShareLeadvisible] = useState(false);
   const [shareLead, setShareLead] = useState("");
   const [successMsg, setSuccessMsg] = useState(null);
-  const [showtableLeadQty, setShowTableLeadQty] = useState(false);
+  // const [showtableLeadQty, setShowTableLeadQty] = useState(false);
   const [showtableProductQty, setShowTableProductQty] = useState(false);
-  const [showtablePainArea, setShowTablePainArea] = useState(false);
-  const [showtableCourse, setShowTableCourse] = useState(false);
+  // const [showtablePainArea, setShowTablePainArea] = useState(false);
+  // const [showtableCourse, setShowTableCourse] = useState(false);
   const [pipelineStatus, setPipelineStatus] = useState(false);
+  const [sharedMembers, setsharedMembers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [disableCP, setDisableCP] = useState(false);
+  const [cp_Name, setCP_Name] = useState("");
 
-  // console.log(language);
-  // console.log(leadQtyList);
+  const sharedLeadApi = async () => {
+    try {
+      const response = await getSharedLeadAPI();
+      setsharedMembers(response.flat());
+    } catch (error) {
+      console.log("Error in fetching shared LeadAPI  data");
+    }
+  };
 
-  // const nameChangeHandler = (text) => {
-  //   setUser_name(text);
-  // };
+  useEffect(() => {
+    sharedLeadApi();
+  }, []);
+
+  let sharedLeadData = [];
+  if (sharedMembers) {
+    sharedLeadData = sharedMembers.flat().map((item) => ({
+      label: item.name,
+      value: item.id,
+    }));
+  }
+
+  const sharedLeadHandler = async () => {
+    setLoading(true);
+    try {
+      const response = await sharedLeadAPI(leadID, shareLead, mid);
+      if (response?.success) {
+        Alert.alert(
+          "Success",
+          response?.message
+            ? response?.message
+            : "shared member Id successfully updated!"
+        );
+      }
+      hideShareLeadModal();
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log("Error in Submitting Shared LeadAPI data", error);
+    }
+  };
 
   const leadQty_filt = getDropdownValues(filterRecordData?.lead_quality_filt);
-  const pain_area_filt = getDropdownValues(filterRecordData?.pain_area_filt);
-  const course_filt = filterRecordData?.course_list_r.map(
-    ({ course_name }) => ({
-      label: course_name,
-      value: course_name,
-    })
-  );
+  // const pain_area_filt = getDropdownValues(filterRecordData?.pain_area_filt);
+  // const course_filt = filterRecordData?.course_list_r.map(
+  //   ({ course_name }) => ({
+  //     label: course_name,
+  //     value: course_name,
+  //   })
+  // );
   const products_filt = filterRecordData?.products.map(({ id, name }) => ({
     label: name,
     value: id,
@@ -140,15 +179,22 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
           },
         }
       );
-      console.log("response of the potentialCPLeadAPI = ", response);
-      if (response?.data?.success) {
+      // console.log("response of the potentialCPLeadAPI = ", response?.data?.ozonetel_campaign_name);
+      if (response?.data?.ozonetel_campaign_name) {
         setLoading(false);
+        setCP_Name(response?.data?.ozonetel_campaign_name);
+        setDisableCP(true);
         hideModal();
-        setPipelineStatus(!pipelineStatus);
-        Alert.alert(
-          "Success",
-          "Your lead has been successfully shared to CP team."
+        setSuccessMsg(
+          "Success, Your lead has been successfully shared to CP team."
         );
+        setTimeout(() => {
+          setSuccessMsg(null);
+        }, 3000);
+        // Alert.alert(
+        //   "Success",
+        //   "Your lead has been successfully shared to CP team."
+        // );
       } else {
         setLoading(false);
         hideModal();
@@ -172,27 +218,35 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
           },
         }
       );
-      console.log("response of the potentialCPLeadAPI = ", response);
-      if (response?.data?.success) {
+      console.log(
+        "response of the potentialIPLeadAPI  status 1 = ",
+        response?.status
+      );
+      console.log("response of the Status2 = ", response?.data?.status);
+      if (response?.status) {
         setLoading(false);
-        hideModal();
-        setPipelineStatus(!pipelineStatus);
-        Alert.alert(
-          "Success",
-          "Your lead has been successfully shared to CP team."
+        hideIPModal();
+        setSuccessMsg(
+          "Success, Your lead has been successfully shared to IP team."
         );
+        setTimeout(() => {
+          setSuccessMsg(null);
+        }, 3000);
+        // Alert.alert(
+        //   "Success",
+        //   "Your lead has been successfully shared to IP team."
+        // );
       } else {
         setLoading(false);
-        hideModal();
+        hideIPModal();
         Alert.alert("Error", "Something went wrong!");
       }
     } catch (error) {
       setLoading(false);
-      hideModal();
+      hideIPModal();
       console.error("Error fetching data:", error);
     }
   }
-
   // async function nameChangeAPI() {
   //   try {
   //       const response = await axios.get(`https://crm.henryharvin.com/portal-new/amob/for/update?l_id=${leadID}&name=${user_name}`,{
@@ -227,12 +281,75 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
   //       console.error('Error fetching data:', error);
   //   }};
 
+  async function addProductLeadQtyAPI(value) {
+    if (!leadID) {
+      Alert.alert("Error", "No data found");
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `https://crm.henryharvin.com/portal-new/app-edit/product_lead?leadq=${value}&id=${leadID}`,
+        {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        }
+      );
+      if (response?.data?.success) {
+        setSuccessMsg("Success, Product Lead Quality successfully added");
+        setTimeout(() => {
+          setSuccessMsg(null);
+        }, 3000);
+      } else {
+        Alert.alert("Error", "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  async function addProductAPI(value) {
+    try {
+      const response = await axios.get(
+        `https://crm.henryharvin.com/portal-new/app-change-product?lid=${leadID}&value=${value}`,
+        {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        }
+      );
+      if (response?.status == "200") {
+        // Alert.alert("Success", "Product Lead Quality successfully added");
+        setSuccessMsg("Success, Product successfully added");
+        setTimeout(() => {
+          setSuccessMsg(null);
+        }, 3000);
+      } else {
+        Alert.alert("Error", "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
   const handleMsg = () => {
     setSuccessMsg("This feature will be available soon");
     setTimeout(() => {
       setSuccessMsg(null);
     }, 3000);
   };
+  // Function to find label by value
+  function findLabelByValue(data, value) {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].value === value) {
+        return data[i].label;
+      }
+    }
+    // Return null if value is not found
+    return null;
+  }
+
+  const label = findLabelByValue(products_filt, lead_data.product_id);
 
   return (
     <View style={{ flex: 1, paddingBottom: 10 }}>
@@ -300,19 +417,20 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                   iconColor={primaryColor}
                   size={35}
                   onPress={showModal}
+                  disabled={disableCP}
                 />
                 <View style={styles.container}>
                   <Text
                     className="text-gray-600 font-bold"
                     style={styles.addText}
                   >
-                    Potential
+                    {cp_Name ? "Transferred To" : "Potential"}
                   </Text>
                   <Text
                     className="text-gray-600 font-bold"
                     style={styles.pipelineText}
                   >
-                    CP Lead
+                    {cp_Name ? cp_Name : "CP Lead"}
                   </Text>
                 </View>
               </View>
@@ -339,6 +457,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                       <Button
                         onPress={potentialCPLeadAPI}
                         loading={loading}
+                        disabled={disableCP}
                         mode="contained"
                       >
                         Potential CP Lead
@@ -447,6 +566,12 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                   iconColor={primaryColor}
                   size={35}
                   onPress={handleMsg}
+                  // onPress={() =>
+                  //   navigation.navigate("CourseMailer", {
+                  //     leadID: leadID,
+                  //     mid : mid,
+                  //   })
+                  // }
                 />
                 <View style={styles.container}>
                   <Text
@@ -465,7 +590,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
               </View>
               <View>
                 <IconButton
-                  icon="file-document-outline" //-check
+                  icon="file-document-outline" //-check CourseMailer
                   iconColor={primaryColor}
                   size={35}
                   onPress={handleMsg}
@@ -520,21 +645,21 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                         style={{ color: primaryColor }}
                         className="text-center text-xl font-bold"
                       >
-                       Share Lead with other member
+                        Share Lead with other member
                       </Text>
                     </View>
                     <Text className="text-lg text-slate-700 mt-3">
-                    Share Lead With:
+                      Share Lead With:
                     </Text>
-                    <View className='mt-3'>
-                        <DropDownComponent 
-                          search={true}
-                          placeholder={"--Select Member--"}
-                          data={leadQty_filt}
-                          value={shareLead}
-                          setValue={setShareLead}
-                        />
-                      </View>
+                    <View className="mt-3">
+                      <DropDownComponent
+                        search={true}
+                        placeholder={"--Select Member--"}
+                        data={sharedLeadData}
+                        value={shareLead}
+                        setValue={setShareLead}
+                      />
+                    </View>
                     <View className="flex-row mt-4 justify-end">
                       <Button
                         className="mx-2"
@@ -544,7 +669,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                         Cancel
                       </Button>
                       <Button
-                        onPress={() => {console.log("first")}}
+                        onPress={sharedLeadHandler}
                         loading={loading}
                         mode="contained"
                       >
@@ -574,7 +699,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
           </Card>
         </View>
         <View className="mx-8 mt-3">
-          <View className="mt-3">
+          {/* <View className="mt-3">
             <Text variant="titleMedium" className="mx-2">
               Followup / Modify Date/Time
             </Text>
@@ -585,9 +710,9 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                 onDateChange={(date) => setDateInput(date)}
               />
             </View>
-          </View>
+          </View> */}
           {/* DateTime picker ends here */}
-          <View className="mt-2">
+          {/* <View className="mt-2">
             <View className="flex flex-row justify-between">
               <Text variant="titleMedium" className="mx-2 mt-2">
                 Lead Quality
@@ -613,7 +738,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                 setValue={setLeadqty}
               />
             </View>
-          </View>
+          </View> */}
           <View className="mt-2">
             <View className="flex flex-row justify-between">
               <Text variant="titleMedium" className="mx-2 mt-2">
@@ -629,7 +754,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
               <View className="mb-4">
                 <DataTableComponent
                   data={datafortable}
-                  tableTitle={"PRODUCTLEAD QUALITY List"}
+                  tableTitle={"PRODUCT LEAD QUALITY List"}
                 />
               </View>
             )}
@@ -639,11 +764,12 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                 placeholder={lead_data?.product_lead_quality}
                 data={leadQty_filt}
                 value={productQty}
+                setValueinAPI={addProductLeadQtyAPI}
                 setValue={setProductQty}
               />
             </View>
           </View>
-          <View className="mt-3">
+          {/* <View className="mt-3">
             <View className=" flex-row justify-between">
               <Text variant="titleMedium" className="mx-2 mt-2">
                 Pain Area
@@ -669,8 +795,8 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                 setValue={setPainAreaQty}
               />
             </View>
-          </View>
-          <View className="mt-3">
+          </View> */}
+          {/* <View className="mt-3">
             <View className="flex-row justify-between">
               <Text variant="titleMedium" className="mx-2 mt-2">
                 Course
@@ -696,7 +822,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
                 setValue={setCourseQty}
               />
             </View>
-          </View>
+          </View> */}
           <View className="mt-3 mb-3">
             <Text variant="titleMedium" className="mx-2">
               Product
@@ -704,10 +830,11 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
             <View className="mt-2">
               <DropDownComponent
                 search={true}
-                placeholder={lead_data?.products}
+                placeholder={label || "--Select Product--"}
                 data={products_filt}
                 value={productData}
                 setValue={setProductsData}
+                setValueinAPI={addProductAPI}
               />
             </View>
           </View>

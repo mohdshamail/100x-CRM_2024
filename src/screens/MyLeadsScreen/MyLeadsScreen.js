@@ -6,7 +6,7 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import { Base64 } from 'js-base64';
+import { Base64 } from "js-base64";
 import React, { useState, useEffect } from "react";
 import { primaryColor, storageKeys } from "../../constants/constants";
 import {
@@ -22,7 +22,6 @@ import ButtonComponent from "../../components/Button/Button";
 import LeadsScreen from "../LeadsScreen/LeadsScreen";
 import { Linking } from "react-native";
 import TextInputComponent from "../../components/TextInput/TextInput";
-import MultiSelectComponent from "../../components/DropDown/MultiSelectComponent";
 import {
   doLogout,
   getValueFromStorage,
@@ -30,43 +29,38 @@ import {
 } from "../../utility/utility";
 import { leadDetailsAPI } from "../../api/LeadDetailsAPI/LeadDetailsAPI";
 import DropDownComponent from "../../components/DropDown/DropDown";
-// import { getprofileDataAPI } from '../../api/ProfileDataAPI/getProfileAPI';
 import { addNewLeadAPI } from "../../api/AddNewLeadAPI/addNewLeadAPI";
-import { countryCodeData } from './myLeadsFormData';
-
+import { countryCodeData } from "./myLeadsFormData";
 
 const MyLeadsScreen = ({ navigation, route }) => {
- const filteredRecords = route.params ? route.params.filteredRecords : [];
- const numberOfRecord = route.params ? route.params.numberOfRecord : "0" ;
+  const filteredRecords = route.params ? route.params.filteredRecords : [];
+  const numberOfRecord = route.params ? route.params.numberOfRecord : "0";
   const [leadRecord, setLeadRecord] = useState();
   const [visible, setVisible] = useState(false);
-  // const [showDropDown, setShowDropDown] = useState(false);
   const [add_name, setAdd_name] = useState("");
   const [add_email, setAdd_email] = useState("");
   const [course, setCourse] = useState("");
   const [country_code, setcountry_code] = useState("+91");
   const [add_mobile, setAdd_mobile] = useState("");
   const [menuVisible, setMenuVisible] = useState(false);
-  // const [visibleCoupon, setVisibleCoupon] = useState(false);
-  // const [showDiscountCoupon, setshowDiscountCoupon] = useState(false);
-  // const [inputData, setInputData] = useState();
-  // const [discountCouponType, setDiscountCouponType] = useState("");
-  // const [selectedProduct, setSelectedProduct] = useState([]);
-  // const [selectedCourse, setSelectedCourse] = useState([]);
   const [leadCount, setLeadCount] = useState("0");
   const [courseData, setCourseData] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [base64_mid, setBase64_mid] = useState(null);
   const [mid, setmid] = useState(null);
-  const url = `https://chat.henryharvin.com/login?member_id=${mid}`;
- 
+  const [email, setEmail] = useState(null);
 
+  const url = `https://chat.henryharvin.com/login?member_id=${base64_mid}`;
 
   // const handleOpenDrawer = () => navigation.openDrawer();
   const getAPIData = async () => {
+    const email = await getValueFromStorage(storageKeys.EMAIL_ID);
     const memberId = await getValueFromStorage(storageKeys.MEMBER_ID);
-    const m_id = memberId.toString();
-    setmid( Base64.encode(m_id));
+    setEmail(email);
+    setmid(memberId);
+    const base64_id = memberId.toString();
+    setBase64_mid(Base64.encode(base64_id));
     if (memberId) {
       try {
         const response = await leadDetailsAPI(memberId);
@@ -89,13 +83,11 @@ const MyLeadsScreen = ({ navigation, route }) => {
     getAPIData();
   }, []);
 
- 
-
   const courseList = getCourseListData(courseData);
   const addnewLeadhandler = async () => {
     try {
       // Check if name and email are empty
-      if (!add_name || !add_email || !course || !country_code || !add_mobile ) {
+      if (!add_name || !add_email || !course || !country_code || !add_mobile) {
         Alert.alert(
           "Error",
           "All Fields are required.",
@@ -109,23 +101,24 @@ const MyLeadsScreen = ({ navigation, route }) => {
         );
         return; // Exit the function if name or email is empty
       }
-  
+
       setLoading(true);
       const addnewLeadResponse = await addNewLeadAPI(
         add_name,
         add_email,
         course,
         country_code,
-        add_mobile
+        add_mobile,
+        mid
       );
-  
+
       if (addnewLeadResponse?.status === 200) {
         setLoading(false);
         hideModal();
-        setAdd_name('');
-        setAdd_email('');
-        setCourse('');
-        setAdd_mobile('');
+        setAdd_name("");
+        setAdd_email("");
+        setCourse("");
+        setAdd_mobile("");
         console.log("success!!");
         Alert.alert(
           "Success",
@@ -140,10 +133,10 @@ const MyLeadsScreen = ({ navigation, route }) => {
         );
       } else if (addnewLeadResponse?.status === 400) {
         setLoading(false);
-        setAdd_name('');
-        setAdd_email('');
-        setCourse('');
-        setAdd_mobile('');
+        setAdd_name("");
+        setAdd_email("");
+        setCourse("");
+        setAdd_mobile("");
         hideModal();
         Alert.alert(
           "HENRY HARVIN EDUCATION",
@@ -173,7 +166,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
       );
     }
   };
-  
+
   // menu items appear here
   const menuItems = [
     // {
@@ -182,42 +175,24 @@ const MyLeadsScreen = ({ navigation, route }) => {
     // },
     {
       label: "New Course Enquiry",
-      onPress: () => navigation.navigate("NewCourseEnquiry"),
+      onPress: () => navigation.navigate("NewCourseEnquiry",{
+        mid: mid,
+        email: email, 
+      }),
     },
-    {
-      label: "Start Auto Dial",
-      onPress: () => console.log("Start Auto Dial clicked"),
-    },
+    // {
+    //   label: "Start Auto Dial",
+    //   onPress: () => console.log("Start Auto Dial clicked"),
+    // },
   ];
   //function for opening/closing the side menu bar from three-dot-icon
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
-  
- 
-  // const handleopenMenu = () => console.log("open menu by three dots");
-  //dropdown coupon data
-  // const discountCoupon = [
-  //   { label: "Flat", value: "flat" },
-  //   { label: "Percentage", value: "percentage" },
-  // ];
-
-  //function for visible/hide the discountCoupon
-  // const showRequestCoupon = () => setVisibleCoupon(true);
-  // const hideRequestCoupon = () => setVisibleCoupon(false);
-
-  // const handleMsg = () => {
-  //   Alert.alert(
-  //     "HENRY HARVIN EDUCATION",
-  //     "This Feature will be Available Soon!",
-  //     [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-  //     { cancelable: true }
-  //   );
-  // };
 
   //leads counts show here in title varaiable
-  const title = `My Leads (${numberOfRecord == 0 ? leadCount : numberOfRecord})`;
-  //total price after discount coupon applied
-  const totalPrice = "0";
+  const title = `My Leads (${
+    numberOfRecord == 0 ? leadCount : numberOfRecord
+  })`;
   //function for opening/closing the Form By modal
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -244,7 +219,6 @@ const MyLeadsScreen = ({ navigation, route }) => {
         <Appbar.Action
           icon="whatsapp"
           size={30}
-          // mode="outlined"
           iconColor="white"
           onPress={() => {
             Linking.openURL(url);
@@ -253,37 +227,37 @@ const MyLeadsScreen = ({ navigation, route }) => {
         <Appbar.Action
           icon="filter-menu"
           size={30}
-          // mode="outlined"
           iconColor="white"
           onPress={() => navigation.navigate("FilterLead")}
         />
         <Menu
-            style={{ marginTop: 50 }}
-            visible={menuVisible}
-            onDismiss={closeMenu}
-            anchor={
-              <Surface style={{ backgroundColor: primaryColor }}>
-                <Appbar.Action
-                  icon="dots-vertical"
-                  // mode="ouctlined"
-                  size={30}
-                  iconColor="white"
-                  onPress={openMenu}
-                />
-              </Surface>
-            }
-          >
-            <View className="rounded-xl">
-              {menuItems.map((item) => (
-                <Menu.Item
-                  key={item.label}
-                  onPress={item.onPress}
-                  leadingIcon={item.leadingIcon}
-                  title={item.label}
-                />
-              ))}
-            </View>
-          </Menu>
+          style={{ marginTop: 50 }}
+          visible={menuVisible}
+          onDismiss={closeMenu}
+          anchor={
+            <Surface 
+              style={{ backgroundColor: primaryColor, }}>
+              <Appbar.Action
+                icon="dots-vertical"
+                size={30}
+                iconColor="white"
+                onPress={openMenu}
+              />
+            </Surface>
+          }
+        >
+          <View className="">
+            {menuItems.map((item) => (
+              <Menu.Item
+              
+                key={item.label}
+                onPress={item.onPress}
+                leadingIcon={item.leadingIcon}
+                title={item.label}
+              />
+            ))}
+          </View>
+        </Menu>
       </Appbar.Header>
       {/*Scrollable Button form starts here */}
       <View className="flex-row mt-4">
@@ -396,7 +370,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
               {/* modal for Add Leads Ends here */}
             </View>
           </View>
-          <View>
+          {/* <View>
             <ButtonComponent
               cssClassName={"mx-1"}
               style={{ borderColor: primaryColor }}
@@ -413,7 +387,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
             >
               My Followup Leads
             </ButtonComponent>
-          </View>
+          </View> */}
           <View>
             <ButtonComponent
               cssClassName={"mx-1"}
@@ -465,133 +439,14 @@ const MyLeadsScreen = ({ navigation, route }) => {
               style={{ borderColor: primaryColor }}
               icon={"filter-menu"}
               mode={"outlined"}
-              // onPress={showRequestCoupon}
-              onPress={() => {
-                Alert.alert(
-                  "HENRY HARVIN EDUCATION",
-                  "This Feature will be Available Soon!",
-                  [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-                  { cancelable: true }
-                );
-              }}
+              onPress={() => {navigation.navigate("RequestForCoupon" , {
+                email:email,
+                mid:mid,
+              })}}
             >
               Request For Coupon
             </ButtonComponent>
           </View>
-          {/* Request for coupon form-modal */}
-          <View>
-            <ScrollView>
-              {/* <Portal className="rounded-lg">
-                <Modal
-                  className="mx-8"
-                  visible={visibleCoupon}
-                  onDismiss={() => console.log("first")}
-                  contentContainerStyle={containerStyle}
-                >
-                  <View className="">
-                    <View>
-                      <Text
-                        style={{ color: primaryColor, fontSize: 25 }}
-                        className="text-xl text-center"
-                      >
-                        Request Coupon
-                      </Text>
-                    </View>
-                    <Divider />
-                    <View>
-                      <View className="mt-1">
-                        <DropDown
-                          showArrowIcon={true}
-                          label={"Type"}
-                          mode={"outlined"}
-                          visible={showDiscountCoupon}
-                          showDropDown={() => setshowDiscountCoupon(true)}
-                          onDismiss={() => setshowDiscountCoupon(false)}
-                          value={discountCouponType}
-                          setValue={setDiscountCouponType}
-                          list={discountCoupon}
-                        />
-                      </View>
-                    </View>
-                    {"percentage" == discountCouponType ? (
-                      <View className="mt-4">
-                        <TextInputComponent
-                          placeholder={"Enter Discount in Percentage"}
-                          label={"Discount (%)"}
-                          value={""}
-                          keyboardType="numeric"
-                          type="number"
-                          onInputChange={(text) => console.log(text)}
-                        />
-                      </View>
-                    ) : (
-                      <View>
-                        <View className="mt-4">
-                          <TextInputComponent
-                            placeholder={"Enter Discount Amount in Rs"}
-                            label={"Flat Discount (INR)"}
-                            value={inputData}
-                            keyboardType="numeric"
-                            onInputChange={(text) => setInputData(text)}
-                          />
-                          <View className="mt-4">
-                            <TextInputComponent
-                              placeholder={"Enter Discount Amount in USD"}
-                              label={"Flat Discount (USD)"}
-                              value={""}
-                              keyboardType="numeric"
-                              type="number"
-                              onInputChange={(text) => console.log(text)}
-                            />
-                          </View>
-                        </View>
-                      </View>
-                    )}
-                    <View className="mt-4">
-                      <MultiSelectComponent
-                        placeholder="--Course--"
-                        setSelected={setSelectedCourse}
-                        data={courses}
-                      />
-                    </View>
-                    <View className="mt-4">
-                      <MultiSelectComponent
-                        placeholder="--Product--"
-                        setSelected={setSelectedProduct}
-                        data={Products}
-                      />
-                    </View>
-                    <View className="mt-4">
-                      <TextInputComponent
-                        placeholder={""}
-                        label={"Total Price"}
-                        value={totalPrice}
-                        disabled={true}
-                        onInputChange={(text) => console.log(text)}
-                      />
-                    </View>
-                    <View className="mt-4">
-                      <TextInputComponent
-                        placeholder={"No of Coupons ?"}
-                        label={"Create Coupons"}
-                        value={""}
-                        onInputChange={(text) => console.log(text)}
-                      />
-                    </View>
-                    <View className="mt-4">
-                      <ButtonComponent
-                        onPress={() => console.log("first")}
-                        mode={"contained"}
-                      >
-                        Submit
-                      </ButtonComponent>
-                    </View>
-                  </View> */}
-                {/* </Modal>
-              </Portal> */}
-            </ScrollView>
-          </View>
-          {/* coupon-modal form ends here */}
         </ScrollView>
       </View>
       {/* flatList appears here */}
@@ -647,9 +502,3 @@ const MyLeadsScreen = ({ navigation, route }) => {
 };
 export default MyLeadsScreen;
 
-const styles = StyleSheet.create({
-  contentContainer: {
-    paddingVertical: 0,
-    overflow: "visible",
-  },
-});

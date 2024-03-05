@@ -34,6 +34,7 @@ Axios.interceptors.response.use(
     }
     if (status === UNAUTHORIZED) {
       //DoLogout
+      doLogout();
     
     }
     // Propagate the error to the calling code

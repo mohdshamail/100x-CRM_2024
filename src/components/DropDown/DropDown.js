@@ -3,9 +3,19 @@ import React, { useState } from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import { primaryColor } from "../../constants/constants";
 
-// pass the array of objects in data prop and value ,isFocus prop to DropDownPicker component
-const DropDownComponent = ({ data, value, setValue, search,placeholder,}) => {
+
+const DropDownComponent = ({ data, value, setValue, search,placeholder,setValueinAPI}) => {
   const [isFocus, setIsFocus] = useState(false);
+
+  const onSelectChange = (item) => {
+    setValue(item.value);
+    setIsFocus(false);
+    if (typeof setValueinAPI === 'function' && item.value) {
+      setValueinAPI(item.value);// Call setValueinAPI function if it exists
+    } else {
+      console.log('setValueinAPI function is not available as a prop');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -30,12 +40,11 @@ const DropDownComponent = ({ data, value, setValue, search,placeholder,}) => {
         value={value} //current value
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
-        //setIsFocus(false)
-        onChange={(item) => {
-          setValue(item.value); //setState function
-            setIsFocus(false);
-          // console.log("hello beta ")
-        }}
+        onChange={onSelectChange} 
+        // onChange={(item) => {
+        //   setValue(item.value);
+        //     setIsFocus(false);
+        // }}
       />
     </View>
   );
