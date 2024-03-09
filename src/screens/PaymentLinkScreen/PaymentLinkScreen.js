@@ -30,7 +30,8 @@ import { storageKeys } from "../../constants/constants";
 
 const PaymentLinkScreen = ({ navigation, route }) => {
   const lead_id = route.params?.leadID;
-  const [member_id, setMemberID] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [member_id, setMember_id] = useState(null);
   const [mailChecked, setMailChecked] = useState(false);
   const [smsChecked, setSmsChecked] = useState(false);
   const [mobileNo, setMobileNo] = useState("");
@@ -43,24 +44,31 @@ const PaymentLinkScreen = ({ navigation, route }) => {
   const [selectedCurrency, setSelectedCurrency] = useState("INR");
   const [categoryData, setCategoryData] = useState(null);
   const [courseFilter, setCourseFilter] = useState(null);
+  const [countryList, setCountryList] = useState(null);
   const [addCourseModal, setAddCourseModal] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [apiSendCourses, setapiSendCourses] = useState(null);
+  const [apiSendCourses, setapiSendCourses] = useState([]);
   const [totalfeesAmount, setTotalFeesAmount] = useState("0");
+  const [addons, setAddons] = useState([]);
   const [addServiceModal, setAddServiceModal] = useState([]);
+  const [addServices, setAddServices] = useState([]);
+  const [products, setproducts] = useState([]);
+  const [totalServicesAmount, setTotalServicesAmount] = useState("0");
   const [addInstallmentModal, setAddInstallmentModal] = useState([]);
   const [installmentAmounts, setInstallmentAmounts] = useState([]);
+  const [countryValue, setCountryValue] = useState("");
   const [totalInstallmentsAmount, setTotalInstallmentsAmount] = useState("0");
-  console.log("totalInstallmentsAmountc =", totalInstallmentsAmount);
-
-  // console.log("installments ==" ,installmentAmounts);
   const [snackbarMsg, setSnackbarMsg] = useState(null);
   const [offerdate, setOfferdate] = useState("");
   const [offerDeadline, setOfferDeadline] = useState("");
-  //const [installmentDate, setInstallmentDate] = useState("");
+  const [pendingAmount, setPendingAmount] = useState("");
+  const [pendingDate, setPendingDate] = useState("");
   const [payment_option, setpayment_option] = useState("");
-
   const [noteText, setNoteText] = useState("");
+
+  const offer_amount = (
+    parseInt(totalfeesAmount) + parseInt(totalServicesAmount)
+  ).toString();
 
   const offerDeadlineDateHandler = (date) => {
     const modifyDate = formatDate(date);
@@ -76,9 +84,11 @@ const PaymentLinkScreen = ({ navigation, route }) => {
 
   const fetchapiData = async () => {
     try {
+      const email = await getValueFromStorage(storageKeys.EMAIL_ID);
       const memberId = await getValueFromStorage(storageKeys.MEMBER_ID);
-      const member_id = memberId.toString();
-      setMemberID(member_id);
+      const memberid = memberId.toString();
+      setEmail(email);
+      setMember_id(memberid);
       const apiResponse = await getPaymentLinkDataAPI();
       const categories = apiResponse?.categories.map((item) => {
         return {
@@ -86,6 +96,13 @@ const PaymentLinkScreen = ({ navigation, route }) => {
           value: item.id,
         };
       });
+      const countries = apiResponse?.countries.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      });
+      setCountryList(countries);
       setCategoryData(categories);
       setCourseFilter(apiResponse?.course_filter_p);
     } catch (error) {
@@ -111,6 +128,9 @@ const PaymentLinkScreen = ({ navigation, route }) => {
     setAddCourseModal(updatedCourseModal);
     const updatedCourses = courses.filter((item) => item.key !== keyToRemove);
     setCourses(updatedCourses);
+    var courseAddons = updatedCourses.flatMap((item) => item.course_addons);
+    var addons = courseAddons.map((addon) => parseInt(addon).toString());
+    setAddons(addons);
     setSnackbarMsg("Course removed successfully");
     setTimeout(() => {
       setSnackbarMsg(null);
@@ -138,10 +158,27 @@ const PaymentLinkScreen = ({ navigation, route }) => {
       (addServiceModal) => addServiceModal.key !== keyToRemove
     );
     setAddServiceModal(updatedServiceModal);
+    const updatedServices = addServices.filter(
+      (item) => item.key !== keyToRemove
+    );
+    setAddServices(updatedServices);
+    const productsData = updatedServices.map((item) => ({
+      id: item.product_id,
+      type: "EP",
+      variation_id: "0",
+      selling_price: item.ServiceAddonPrice,
+      coupon_id: item.coupon_id,
+    }));
+    setproducts(productsData);
     setSnackbarMsg("Service removed successfully");
     setTimeout(() => {
       setSnackbarMsg(null);
     }, 1000);
+    // Update totalFeesAmount when removing a course
+    const totalServicePrice = updatedServices.reduce((acc, item) => {
+      return acc + parseFloat(item.ServiceAddonPrice);
+    }, 0);
+    setTotalServicesAmount(totalServicePrice.toString());
   };
 
   // add installment Modal
@@ -171,6 +208,17 @@ const PaymentLinkScreen = ({ navigation, route }) => {
       0
     );
     setTotalInstallmentsAmount(removedInstallmentmount.toString());
+    const formattedPendingAmounts = updatedInstallmentAmounts
+      .map((item) => item.p_amount)
+      .join(", ");
+    const pendingAmounts = `${formattedPendingAmounts}`;
+    setPendingAmount(pendingAmounts);
+    const dueDates = updatedInstallmentAmounts
+      .map((item) => item.due_date)
+      .join(" , ");
+    const due_date = `${dueDates}`;
+    setPendingDate(due_date);
+
     setSnackbarMsg("Installment removed successfully");
     setTimeout(() => {
       setSnackbarMsg(null);
@@ -193,27 +241,52 @@ const PaymentLinkScreen = ({ navigation, route }) => {
       selling_price: item.selling_price.toString(),
       coupon_id: item.coupon_id,
     }));
+    console.log(dataArray);
     setapiSendCourses(courses_data);
+    var courseAddons = dataArray.flatMap((item) => item.course_addons);
+    var addons = courseAddons.map((addon) => parseInt(addon).toString());
+    setAddons(addons);
+
     const totalCoursePrice = dataArray.reduce((acc, item) => {
-      // Convert selling_price to a number and add it to the accumulator
-      return acc + parseFloat(item.selling_price);
+      // Convert selling_price and each addon price to numbers and add them to the accumulator
+      const sellingPrice = parseFloat(item.selling_price);
+      const addonsTotal = item.course_addons.reduce(
+        (addonAcc, addon) => addonAcc + parseFloat(addon),
+        0
+      );
+      return acc + sellingPrice + addonsTotal;
     }, 0); // Initialize accumulator with 0
     setTotalFeesAmount(totalCoursePrice.toString());
+    console.log("totalCoursePrice = ", totalCoursePrice);
+  };
+
+  //add service modal and service's Product Prices
+  const getServiceModalFormValue = (newService) => {
+    setAddServices([...addServices, newService]);
+    const serviceDataArray = [...addServices, newService];
+    const productsData = serviceDataArray.map((item) => ({
+      id: item.product_id,
+      type: "EP",
+      variation_id: "0",
+      selling_price: item.ServiceAddonPrice,
+      coupon_id: item.coupon_id,
+    }));
+    setproducts(productsData);
+    const sum = serviceDataArray.reduce((accumulator, currentValue) => {
+      return accumulator + parseFloat(currentValue.ServiceAddonPrice);
+    }, 0);
+    setTotalServicesAmount(sum.toString());
   };
 
   //getting data from the Add Installment Modals
   const getInstallmentsValue = (amount) => {
-    // Update state
     setInstallmentAmounts((prevAmounts) => [...prevAmounts, amount]);
-
-    // Retrieve current installment amounts including the new one
     const installmentdataArray = [...installmentAmounts, amount];
-
     // Check if installmentdataArray is empty
     if (installmentdataArray.length === 0) {
-      Alert.alert("Error", "No installment data available");
+      Alert.alert("⚠️ Error", "No installment data available");
     } else {
-      // Calculate total amount
+      // Calculate total amount of all installments
       const totalAmountOfInstallment = installmentdataArray.reduce(
         (acc, item) => {
           // Assuming each item has a property "p_amount"
@@ -221,72 +294,92 @@ const PaymentLinkScreen = ({ navigation, route }) => {
         },
         0
       );
-
+      const formattedPendingAmounts = installmentdataArray
+        .map((item) => item.p_amount)
+        .join(", ");
+      setPendingAmount(formattedPendingAmounts);
+      const dueDates = installmentdataArray
+        .map((item) => item.due_date)
+        .join(" , ");
+      setPendingDate(dueDates);
       // Update state with the total amount
       setTotalInstallmentsAmount(totalAmountOfInstallment.toString());
       console.log("totalAmountOfInstallment", totalAmountOfInstallment);
     }
   };
 
-  // console.log("installmentAmounts = ", installmentAmounts);
-  // console.log("total installment amounts = ", totalInstallmentsAmount);
-
   var payment = {
-    lead_id: lead_id,
-    member_id: member_id,
-    send_through_mail: mailChecked,
-    send_through_sms: smsChecked,
-    amount: amountToPay,
-    coupon_ids: [], //couponIds,
-    pending_amount: 14000,
-    due_date: "2024-02-27",
-    offer_amount: totalfeesAmount,
-    note: noteText,
-    courses: apiSendCourses,
-    payment_option: payment_option,
-    is_pending_payment: "", //is_pending_payment,
-    mobile: mobileNo,
-    email: emailID,
-    currencypa: selectedCurrency,
-    products: "", //products, //[],
-    addons: "", //addons, //[],
-    fresh_pending: fresh_pendingAmount,
-    is_sap_partner: 0,
-    reg_type: type,
-    pending_payment_date: pending_payment_date,
-    country_selector: "",
-    offerDeadline: offerDeadline,
+    email:email,
+    member_id:member_id,
+    lead_id:lead_id,
+    send_through_mail:mailChecked,
+    send_through_sms:smsChecked,
+    amount:amountToPay,
+    coupon_ids:[], //couponIds,
+    pending_amount:pendingAmount, //done
+    due_date:pendingDate, //done
+    offer_amount:offer_amount,
+    note:noteText,
+    courses:apiSendCourses,
+    payment_option:payment_option,
+    is_pending_payment:"", //is_pending_payment,
+    mobile:mobileNo,
+    email:emailID,
+    currencypa:selectedCurrency,
+    products:products, //products, //[],
+    addons:addons, //addons, //[],
+    fresh_pending:fresh_pendingAmount,
+    is_sap_partner:0,
+    reg_type:type,
+    pending_payment_date:pending_payment_date,
+    country_selector:countryValue,
+    offerDeadline:offerDeadline,
+    city:"",
+    address:"",
   };
-
+  //⚠️  ✅️
   const handleSendPayment = async () => {
     if (!offerdate || offerdate.trim() === "") {
-      Alert.alert("Error!", "Please select offer deadline Date");
+      Alert.alert("⚠️ Error!", "Please select offer deadline Date");
       return;
     } else if (!fresh_pendingAmount || offerdate.trim() === "") {
-      Alert.alert("Error!", "Select Fresh/Pending Payment!!!");
+      Alert.alert("⚠️ Error!", "Select Fresh/Pending Payment!!!");
     } else if (
       !mobileNo ||
       mobileNo.trim() === "" ||
       !emailID ||
       emailID.trim() === ""
     ) {
-      Alert.alert("Error!", "Fill Mobile and Email first.");
+      Alert.alert("⚠️ Error!", "Fill Mobile and Email first.");
     } else if (
-      (fresh_pendingAmount === "Pending Payment" && !pending_payment_date) ||
-      pending_payment_date.trim() === ""
+      (fresh_pendingAmount === "Pending Payment" && !pending_payment_date)
     ) {
-      Alert.alert("Error!", "Select Month of this pending payment!!!");
-    } else if (!totalFees || totalFees.trim() === "") {
-      Alert.alert("Error!", "Total Fees is required");
+      Alert.alert("⚠️ Error!", "Select Month of this pending payment!!!");
+    } else if (!amountToPay || amountToPay.trim() === "") {
+      Alert.alert("⚠️ Error!", "Total Fees is required");
+    } else if (
+      parseInt(totalInstallmentsAmount) + parseInt(amountToPay) !=
+        parseInt(offer_amount) &&
+      fresh_pendingAmount != "Pending Payment"
+    ) {
+      Alert.alert(
+        "⚠️ Error!",
+        "Installment price mismatch! Kindly rectify first"
+      );
+      
     } else {
       // Proceed with sending payment link
       try {
         const submitPaymentResponse = await sendPaymentLinkAPI(payment);
         console.log("submitPaymentResponse = ", submitPaymentResponse);
+        if(submitPaymentResponse?.success){
+          Alert.alert("✅️ Success" , "Payment Link Sent SuccessFully!")
+        }else if(submitPaymentResponse?.error){
+          Alert.alert("⚠️ Error", submitPaymentResponse?.message ? submitPaymentResponse.message : "Something went wrong! Please try again later.");
+        };
       } catch (error) {
         console.log("error in sending payment link!", error);
       }
-      console.log("Payment link sent successfully");
     }
   };
 
@@ -418,7 +511,9 @@ const PaymentLinkScreen = ({ navigation, route }) => {
                     </View>
                     <AddServiceModal
                       categoryData={categoryData}
+                      selectedCurrency={selectedCurrency}
                       id={addServiceModal.key}
+                      getServiceForm={getServiceModalFormValue}
                     />
                   </ScrollView>
                 </Card>
@@ -466,8 +561,11 @@ const PaymentLinkScreen = ({ navigation, route }) => {
               {selectedCurrency && selectedCurrency === "USD" && (
                 <View className="mt-4">
                   <DropDownComponent
+                    search={true}
                     placeholder={"--Country--"}
-                    data={paymentOption}
+                    data={countryList}
+                    value={countryValue}
+                    setValue={setCountryValue}
                   />
                 </View>
               )}
@@ -476,7 +574,7 @@ const PaymentLinkScreen = ({ navigation, route }) => {
                 <TextInputComponent
                   className="bg-white"
                   // label="Total Fees *"
-                  placeholder={totalfeesAmount ? totalfeesAmount : "0"}
+                  placeholder={offer_amount ? offer_amount : "0"}
                   value={totalFees}
                   onInputChange={(text) => setTotalFees(text)}
                   keyboardType="numeric"

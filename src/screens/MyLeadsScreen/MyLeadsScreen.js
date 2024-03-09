@@ -50,6 +50,7 @@ const MyLeadsScreen = ({ navigation, route }) => {
   const [base64_mid, setBase64_mid] = useState(null);
   const [mid, setmid] = useState(null);
   const [email, setEmail] = useState(null);
+ 
 
   const url = `https://chat.henryharvin.com/login?member_id=${base64_mid}`;
 
@@ -89,12 +90,12 @@ const MyLeadsScreen = ({ navigation, route }) => {
       // Check if name and email are empty
       if (!add_name || !add_email || !course || !country_code || !add_mobile) {
         Alert.alert(
-          "Error",
+          "⚠️ Error",
           "All Fields are required.",
           [
             {
               text: "OK",
-              onPress: () => console.log("OK Pressed"),
+              // onPress: () => console.log("OK Pressed"),
             },
           ],
           { cancelable: false }
@@ -119,14 +120,14 @@ const MyLeadsScreen = ({ navigation, route }) => {
         setAdd_email("");
         setCourse("");
         setAdd_mobile("");
-        console.log("success!!");
+        // console.log("success!!");
         Alert.alert(
-          "Success",
+          "✅️ Success",
           "Lead added successfully",
           [
             {
               text: "OK",
-              onPress: () => console.log("OK Pressed"),
+              // onPress: () => console.log("OK Pressed"),
             },
           ],
           { cancelable: false }
@@ -154,12 +155,12 @@ const MyLeadsScreen = ({ navigation, route }) => {
       setLoading(false);
       console.error("Error occurred while adding new lead:", error);
       Alert.alert(
-        "Error",
+        "⚠️ Error",
         "An error occurred while adding the lead. Please try again later.",
         [
           {
             text: "OK",
-            onPress: () => console.log("OK Pressed"),
+            // onPress: () => console.log("OK Pressed"),
           },
         ],
         { cancelable: false }

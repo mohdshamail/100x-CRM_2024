@@ -15,7 +15,7 @@ const NewCourseEnquiry = ({ navigation, route }) => {
 
   const handlePress = async () => {
     if (!title || !description || title == "" || description == "") {
-      Alert.alert("Warning!", "All fields are required");
+      Alert.alert("⚠️ Error", "All fields are required");
       return;
     }
     try {

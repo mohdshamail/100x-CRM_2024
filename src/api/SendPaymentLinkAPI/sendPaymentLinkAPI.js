@@ -1,10 +1,11 @@
 import { handlePromise } from "../helper";
 
 export const sendPaymentLinkAPI = async( payment ) => {
-  //payment is object : {}
-  const urlWithParams = `/app-auto/pl?send_automated_payment_link=true&payment=${payment}}`;
+  const paymentString = encodeURIComponent(JSON.stringify(payment));
+  const urlWithParams = `/app-auto/pl?send_automated_payment_link=true&payment=${paymentString}`;
+  // console.log("urlWithParams = " , urlWithParams);
 
-
+// ⚠️  ✅️
   const apiPayload = {
     method: "GET",
     url: urlWithParams,

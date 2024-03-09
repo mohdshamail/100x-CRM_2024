@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import AppHeader from "../../components/AppHeader/AppHeader";
 import { primaryColor } from "../../constants/constants";
@@ -107,6 +107,10 @@ const RequestForCoupon = ({ navigation, route }) => {
   };
 
   const submitHandler = async () => {
+    if(filter_course.length == 0 || filter_product.length == 0 ){
+      Alert.alert("⚠️ Error","All Fields are Required!");
+      return false;
+    }
     try {
       const response = await submitCouponRequestAPI(
         mid,
@@ -122,7 +126,7 @@ const RequestForCoupon = ({ navigation, route }) => {
       );
       if (response?.status == "200") {
         const couponCode  = response?.couponCode.replace(/<br>/g, '');
-        setSnackBarData(`Your Coupon Code is: ${couponCode}`);
+        setSnackBarData(`✅️ Your Coupon Code is: ${couponCode}`);
         setTimeout(() => {
           setSnackBarData(false);
         }, 6000);

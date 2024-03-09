@@ -3,9 +3,11 @@ import React, { useState, useEffect } from "react";
 import { Button, Text } from "react-native-paper";
 import ButtonComponent from "../../../components/Button/Button";
 import DropDownComponent from "../../../components/DropDown/DropDown";
+import MultiSelectComponent from "../../../components/DropDown/MultiSelectComponent";
 import TextInputComponent from "../../../components/TextInput/TextInput";
 import { course_type } from "../PaymentLinkData";
 import { primaryColor } from "../../../constants/constants";
+import axios from "axios";
 
 const AddCourseModal = ({
   courseFilter,
@@ -14,9 +16,10 @@ const AddCourseModal = ({
   getCourseForm,
 }) => {
   const [selectedCourse, setSelectedCourse] = useState(null);
-  //console.log("selectedCourse" , selectedCourse);
+  // console.log("selectedCourse" , selectedCourse);
   const [courseType, setCourseType] = useState(null);
-  const [addons, setAddons] = useState(null);
+  const [courseAddons, setCourseAddons] = useState([]);
+  const [addons, setAddons] = useState([]);
   const [mrpPrice, setMRPPrice] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -25,6 +28,8 @@ const AddCourseModal = ({
   const [content_requirement, setContent_requirement] = useState("NA");
   const [couponCode, setCouponCode] = useState("");
   const [status, setStatus] = useState(null);
+  const [disabled, setDisabled] = useState(false);
+
   const [formData, setFormData] = useState({
     key: id,
     id: "",
@@ -34,9 +39,10 @@ const AddCourseModal = ({
     time_requirement: "NA",
     content_requirement: "NA",
     coupon_id: "",
+    course_addons: [],
   });
 
-   //console.log("This child form data = ",formData);
+  //console.log("This child form data = ",formData);
   const course_filter = courseFilter.map((item) => {
     return {
       label: item.course_name,
@@ -104,16 +110,15 @@ const AddCourseModal = ({
           ...prevData,
           id: selectedCourse.id,
         }));
-        
+
         Alert.alert(
-          "Error",
+          "⚠️ Error",
           `Maximum discount (${discount}%) Total Fess can't be less than Rs-${newSellingPrice}/-`
         );
-       
       }
     } else if (selectedCourse && selectedCurrency === "USD") {
       const coursePrice = parseFloat(selectedCourse.price_usd);
-      console.log("coursPerice",coursePrice)
+      console.log("coursPerice", coursePrice);
       const newSellingPrice = coursePrice - (max_discount * coursePrice) / 100;
       console.log("newSellingPrice", newSellingPrice);
       if (input_price < newSellingPrice) {
@@ -127,10 +132,9 @@ const AddCourseModal = ({
           id: selectedCourse.id,
         }));
         Alert.alert(
-          "Error",
+          "⚠️ Error",
           `Maximum discount (${discount}%) Total Fess can't be less than USD-${newSellingPrice}/-`
         );
-        
       }
     } else {
       setSellingPrice(sellingPrice);
@@ -150,17 +154,64 @@ const AddCourseModal = ({
 
   const submitFormHandler = () => {
     if (!selectedCourse || !sellingPrice || !courseType || !formData.id) {
-      Alert.alert("Error", "All Fields are required");
+      Alert.alert("⚠️ Error", "All Fields are required");
     } else {
       getCourseForm(formData);
       setStatus("Added Successfull");
       Alert.alert(
-        "Success",
+        "✅️ Success",
         `${
           selectedCourse?.course_name ? selectedCourse?.course_name : ""
         } Added Successfully!`
       );
+      setDisabled(true);
     }
+  };
+
+  async function courseAddonsAPI(value) {
+    if (!value?.id) {
+      Alert.alert("⚠️ Error", "Something went wrong!");
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `https://crm.henryharvin.com/portal-new/app-addons/${value?.id ?? ""}`
+      );
+      // console.log("response = " , response?.data);
+      if (response?.data?.length > 0) {
+        if (selectedCourse && selectedCurrency === "INR") {
+          console.log("In the Indian Price!");
+          const addons = response?.data.map((item) => {
+            return {
+              label: item.name,
+              value: item.price_inr,
+            };
+          });
+          setCourseAddons(addons);
+        } else if (selectedCourse && selectedCurrency === "USD") {
+          console.log("In the USD Price!");
+          const addons = response?.data.map((item) => {
+            return {
+              label: item.name,
+              value: item.price_usd,
+            };
+          });
+          setCourseAddons(addons);
+        }
+      } else {
+        Alert.alert("⚠️ Error", "No Addons found");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  const addonHandlert = (addons) => {
+    setAddons(addons);
+    setFormData((prevData) => ({
+      ...prevData,
+      course_addons: addons,
+    }));
   };
 
   const textInputFields = [
@@ -200,7 +251,7 @@ const AddCourseModal = ({
       },
     },
   ];
-  const data = [{ label: "No Results Found", value: "" }];
+  // const data = [{ label: "No Results Found", value: "" }];
 
   return (
     <View className="flex-1 mx-6">
@@ -221,6 +272,7 @@ const AddCourseModal = ({
           data={course_filter}
           value={selectedCourse}
           setValue={handleCourseChange}
+          setValueinAPI={courseAddonsAPI}
         />
       </View>
       <View className="mt-4">
@@ -232,11 +284,12 @@ const AddCourseModal = ({
         />
       </View>
       <View className="mt-4">
-        <DropDownComponent
-          placeholder={"Select addons"}
-          data={data}
-          value={addons}
-          setValue={setAddons}
+        <MultiSelectComponent
+          style={{backgroundColor:"white"}}
+          placeholder={"--Select Addons--"}
+          data={courseAddons}
+          selected={addons}
+          setSelected={addonHandlert}
         />
       </View>
       <View className="mt-4">
@@ -293,7 +346,7 @@ const AddCourseModal = ({
             </ButtonComponent>
           </View>
         </View>
-        <Button className="mt-4" onPress={submitFormHandler} mode="contained">
+        <Button className="mt-4" onPress={submitFormHandler} mode="contained" disabled={disabled}>
           {status ? status : "Save"}
         </Button>
       </View>

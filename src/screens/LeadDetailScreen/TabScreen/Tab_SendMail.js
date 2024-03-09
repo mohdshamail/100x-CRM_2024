@@ -91,7 +91,7 @@ const Tab_SendMail = ({ leadEmail, leadID }) => {
   const data = [{ label: "course", value: "course_id" }];
 
   const courseMailerHandler = () => {
-    Alert.alert("Sorry!", "This Mailer is not in use.");
+    Alert.alert("⚠️ Sorry", "This Mailer is not in use.");
   };
 
   return (

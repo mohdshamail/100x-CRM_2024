@@ -123,13 +123,13 @@ const ActionLeadDetailForm = () => {
       // console.log(response?.data);
       if (response?.data?.success) {
         Alert.alert(
-          "Success",
+          "✅️ Success",
           response?.data?.message
             ? response?.data?.message
             : "Email update successfully"
         );
       } else {
-        Alert.alert("Error in updating Email");
+        Alert.alert("⚠️ Error in updating Email");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -149,7 +149,7 @@ const ActionLeadDetailForm = () => {
       //console.log(response);
       if (response?.data?.success) {
         Alert.alert(
-          "Success",
+          "✅️ Success",
           response?.message
             ? response?.message
             : "mobile number update successfully"
@@ -157,7 +157,7 @@ const ActionLeadDetailForm = () => {
       } else if (response?.data?.message) {
         Alert.alert(response?.data?.message);
       } else {
-        Alert.alert("Error in updating mobile no");
+        Alert.alert("⚠️ Error in updating mobile no");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -177,7 +177,7 @@ const ActionLeadDetailForm = () => {
 
       if (response?.data?.success) {
         Alert.alert(
-          "Success",
+          "✅️ Success",
           response?.message
             ? response?.message
             : "mobile number update successfully"
@@ -185,7 +185,7 @@ const ActionLeadDetailForm = () => {
       } else if (response?.data?.message) {
         Alert.alert(response?.data?.message);
       } else {
-        Alert.alert("Error in updating mobile no");
+        Alert.alert("⚠️ Error in updating mobile no");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -203,9 +203,9 @@ const ActionLeadDetailForm = () => {
         }
       );
       if (response?.data?.message) {
-        Alert.alert("Success", response?.data?.message);
+        Alert.alert("✅️ Success", response?.data?.message);
       } else {
-        Alert.alert("Error in updating country Code!");
+        Alert.alert("⚠️ Error in updating country Code!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -224,13 +224,13 @@ const ActionLeadDetailForm = () => {
       );
       if (response?.data?.success) {
         Alert.alert(
-          "Success",
+          "✅️ Success",
           response?.data?.message
             ? response?.data?.message
             : "Alternate Email Successfully Added"
         );
       } else {
-        Alert.alert("Error in updating alternate Email!");
+        Alert.alert("⚠️ Error in updating alternate Email!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -278,7 +278,7 @@ const ActionLeadDetailForm = () => {
   const checkEligibilityHandler = async () => {
     setLoading(true);
     if (amount == "" || amount == 0) {
-      Alert.alert("Error", "Amount is Required !");
+      Alert.alert("⚠️ Error", "Amount is Required !");
       return;
     }
     const email = dataFromAPI?.email;
@@ -289,7 +289,7 @@ const ActionLeadDetailForm = () => {
       // console.log("Check shopsy response = ", data);
       if (data.status == "400") {
         Alert.alert(
-          "SORRY, UNEXPECTED ERROR",
+          "⚠️ SORRY, UNEXPECTED ERROR",
           `We are working on fixing the problem. Please try again later.`
         );
         setAmount("");
@@ -318,12 +318,12 @@ const ActionLeadDetailForm = () => {
       if (instantEmiEligibility === "" && ccEmiAvailability === "") {
         setLoading(false);
         Alert.alert(
-          "SORRY, UNEXPECTED ERROR",
+          "⚠️ SORRY, UNEXPECTED ERROR",
           "We are working on fixing the problem. Please try again later."
         );
       } else {
         Alert.alert(
-          "CONGRATULATIONS",
+          "✅️ CONGRATULATIONS",
           `${instantEmiEligibility} INSTANT EMI ELIGIBILITY\n${ccEmiAvailability} CREDIT CARD EMI AVAILABILITY`
         );
         setLoading(false);
@@ -332,7 +332,7 @@ const ActionLeadDetailForm = () => {
       console.error("Error:", error);
       setLoading(false);
       Alert.alert(
-        "SORRY, UNEXPECTED ERROR",
+        "⚠️ SORRY, UNEXPECTED ERROR",
         "We are working on fixing the problem. Please try again later."
       );
     }
@@ -342,7 +342,7 @@ const ActionLeadDetailForm = () => {
   const checkAlternateEligibilityHandler = async () => {
     setLoading(true);
     if (altShopseEligibility == "" || altShopseEligibility == 0) {
-      Alert.alert("Error", "Amount is Required !");
+      Alert.alert("⚠️ Error", "Amount is Required !");
       return;
     }
     const email = dataFromAPI?.email;
@@ -358,7 +358,7 @@ const ActionLeadDetailForm = () => {
       // console.log("Check shopsy response = ", data);
       if (data.status == "400") {
         Alert.alert(
-          "SORRY, UNEXPECTED ERROR",
+          "⚠️ SORRY, UNEXPECTED ERROR",
           `We are working on fixing the problem. Please try again later.`
         );
         setAltShopseeEligibility("");
@@ -387,7 +387,7 @@ const ActionLeadDetailForm = () => {
       if (instantEmiEligibility === "" && ccEmiAvailability === "") {
         setLoading(false);
         Alert.alert(
-          "SORRY, UNEXPECTED ERROR",
+          "⚠️ SORRY, UNEXPECTED ERROR",
           "We are working on fixing the problem. Please try again later."
         );
         setAltShopseeEligibility("");
@@ -395,7 +395,7 @@ const ActionLeadDetailForm = () => {
       } else {
         setLoading(false);
         Alert.alert(
-          "CONGRATULATIONS",
+          "✅️ CONGRATULATIONS",
           `${instantEmiEligibility} INSTANT EMI ELIGIBILITY\n${ccEmiAvailability} CREDIT CARD EMI AVAILABILITY`
         );
 
@@ -406,7 +406,7 @@ const ActionLeadDetailForm = () => {
       setLoading(false);
       console.error("Error:", error);
       Alert.alert(
-        "SORRY, UNEXPECTED ERROR",
+        "⚠️ SORRY, UNEXPECTED ERROR",
         "We are working on fixing the problem. Please try again later."
       );
       setAltShopseeEligibility("");
@@ -443,7 +443,7 @@ const ActionLeadDetailForm = () => {
       !countryCode ||
       !mobileNo
     ) {
-      Alert.alert("Error", "Please fill in all required fields.");
+      Alert.alert("⚠️ Error", "Please fill in all required fields.");
       return false;
     }
     return true;

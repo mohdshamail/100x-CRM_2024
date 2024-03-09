@@ -31,7 +31,7 @@ const AddInstallmentModal = ({id,getAmount}) => {
  
 const saveInstallmentHandler = () => {
   if (!installment_amounts || !installmentDate || installmentDate === "") {
-    Alert.alert("Error", `All Fields are required`);
+    Alert.alert("⚠️ Error", `All Fields are required`);
     }  else {
       const updatedInstallmentData = {
         ...installmentData,
@@ -40,7 +40,7 @@ const saveInstallmentHandler = () => {
       };
       setInstallmentData(updatedInstallmentData);
       getAmount(updatedInstallmentData); // Pass the updated state directly
-      Alert.alert("Success", `Installment Added Successfully`);
+      Alert.alert("✅️ Success", `Installment Added Successfully`);
       setStatus("Added Successfully");
     }
 };

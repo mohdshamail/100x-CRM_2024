@@ -70,12 +70,16 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
   }
 
   const sharedLeadHandler = async () => {
+    if (!shareLead) {
+      Alert.alert("⚠️", "Please! Select a Member to Transfer Lead");
+      return;
+    }
     setLoading(true);
     try {
       const response = await sharedLeadAPI(leadID, shareLead, mid);
       if (response?.success) {
         Alert.alert(
-          "Success",
+          "✅ Success",
           response?.message
             ? response?.message
             : "shared member Id successfully updated!"
@@ -134,9 +138,9 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
       console.log("response of the Added to pipeline =", response.data.success);
       if (response?.data?.success) {
         setPipelineStatus(!pipelineStatus);
-        Alert.alert("Success", "Lead successfully Added to pipeline");
+        Alert.alert("✅ Success", "Lead successfully Added to pipeline");
       } else {
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -159,9 +163,9 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
       );
       if (response?.data?.success) {
         setPipelineStatus(!pipelineStatus);
-        Alert.alert("Success", "Lead successfully removed from pipeline");
+        Alert.alert("✅ Success", "Lead successfully removed from pipeline");
       } else {
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -198,7 +202,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
       } else {
         setLoading(false);
         hideModal();
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       setLoading(false);
@@ -239,7 +243,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
       } else {
         setLoading(false);
         hideIPModal();
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       setLoading(false);
@@ -283,7 +287,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
 
   async function addProductLeadQtyAPI(value) {
     if (!leadID) {
-      Alert.alert("Error", "No data found");
+      Alert.alert("⚠️ Error", "No data found");
       return;
     }
     try {
@@ -301,7 +305,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
           setSuccessMsg(null);
         }, 3000);
       } else {
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -325,7 +329,7 @@ const ActionTabScreen = ({ lead_data, filterRecordData, mid }) => {
           setSuccessMsg(null);
         }, 3000);
       } else {
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);

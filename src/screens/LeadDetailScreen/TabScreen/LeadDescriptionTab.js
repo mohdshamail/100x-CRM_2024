@@ -112,7 +112,7 @@ const LeadDescriptionTab = ({ lead_data, filterRecordData, mid }) => {
           setSuccessMsg(false);
         }, 3000);
       } else {
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
         setproductComment("");
         hideModal_3();
       }
@@ -139,7 +139,7 @@ const LeadDescriptionTab = ({ lead_data, filterRecordData, mid }) => {
           setSuccessMsg(false);
         }, 3000);
       } else {
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -163,10 +163,10 @@ const LeadDescriptionTab = ({ lead_data, filterRecordData, mid }) => {
           setSuccessMsg(false);
         }, 3000);
       } else if(response?.data?.error){
-        Alert.alert("Error",response?.data?.message ? response?.data?.message : "Kindly add language First!" );
+        Alert.alert(" ⚠️ Error",response?.data?.message ? response?.data?.message : "Kindly add language First!" );
       }
       else {
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -190,7 +190,7 @@ const LeadDescriptionTab = ({ lead_data, filterRecordData, mid }) => {
           setSuccessMsg(false);
         }, 3000);
       } else {
-        Alert.alert("Error", "Something went wrong!");
+        Alert.alert("⚠️ Error", "Something went wrong!");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
